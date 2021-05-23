@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  sysmon-client:
+    build: ./sysmon
+    image: sysmon-client
+    container_name: sysmon-client
+    environment:
+      HOST: Matthias-PC

@@ -1,0 +1,6 @@
+psutil
+pandas
+nvgpu
+matplotlib
+hydra-core
+
