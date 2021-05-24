@@ -5,7 +5,6 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     python3.9 python3-pip python3.9-dev
 
-
 WORKDIR /usr/src/app
 
 COPY requirements.txt ./

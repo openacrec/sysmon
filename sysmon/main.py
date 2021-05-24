@@ -1,5 +1,4 @@
 import json
-import socket
 import time
 from os import makedirs, environ
 
@@ -8,7 +7,7 @@ import nvgpu
 import psutil
 
 system_stats = {"gpu": [], "cpu": [], "memory": [], "sensor": [], "disk": []}
-machine_name = socket.gethostname() or environ["HOST"]
+machine_name = environ["HOSTNAME"]
 
 
 def update():
