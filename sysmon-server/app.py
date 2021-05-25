@@ -22,12 +22,12 @@ def json_handler():
     if request.method == 'POST':
         if request.is_json:
             req = request.get_json()
-            static_path = f"{app.root_path}/static/"
-            with open(f"{req['machine_name']}.json", "w+") as out:
+            static_dir = f"{app.root_path}/static"
+            with open(f"{static_dir}/{req['machine_name']}.json", "w+") as out:
                 dump(req, out)
-            with open("machine_names.json", "r") as in_file:
+            with open(f"{static_dir}/machine_names.json", "r") as in_file:
                 machine_names = load(in_file)
-                with open("machine_names.json", "w") as out:
+                with open(f"{static_dir}/machine_names.json", "w") as out:
                     known_names = machine_names["names"]
                     new_name = req["machine_name"]
                     if new_name not in known_names:
