@@ -20,6 +20,7 @@ def update(system_stats):
     system_stats["cpu"].append([time_str, psutil.cpu_percent()])  # this gives an average
     system_stats["memory"].append(psutil.virtual_memory().percent)
     system_stats["gpu"].append(nvgpu.gpu_info())
+    return system_stats
 
 
 def relevant_data(system_stats, number_of_data_items):
@@ -57,10 +58,12 @@ def send_to_server(system_stats):
     :return:
     """
     json_endpoint = environ["JSON_ENDPOINT"]
-    print("HELLO WORLD")
     req = post(json_endpoint, json=system_stats)
     if req.status_code != 200:
+        print(req.reason)
         raise requests.exceptions.RequestsWarning
+    else:
+        print(f"Updated system statistics on {environ['HOSTNAME']}.")
 
 
 @hydra.main(config_path="config/", config_name="config")
@@ -73,10 +76,7 @@ def sysmon_app(cfg):
     """
     system_stats = {"machine_name": environ["HOSTNAME"], "cpu": [], "memory": [], "gpu": []}
     while True:
-        update(system_stats)
-        print("Updated system statistics.")
-        print("Current:")
-        print(system_stats)
+        system_stats = update(system_stats)
         system_stats = relevant_data(system_stats, cfg.number_of_data_items)
         save_json_file(system_stats)
         send_to_server(system_stats)
