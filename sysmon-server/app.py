@@ -22,11 +22,12 @@ def json_handler():
     if request.method == 'POST':
         if request.is_json:
             req = request.get_json()
-            with open(f"{app.root_path}/static/{req['machine_name']}.json", "w+") as out:
+            static_path = f"{app.root_path}/static/"
+            with open(f"{req['machine_name']}.json", "w+") as out:
                 dump(req, out)
-            with open(f"{app.root_path}/static/machine_names.json", "r") as in_file:
+            with open("machine_names.json", "r") as in_file:
                 machine_names = load(in_file)
-                with open(f"{app.root_path}/static/machine_names.json", "w") as out:
+                with open("machine_names.json", "w") as out:
                     known_names = machine_names["names"]
                     new_name = req["machine_name"]
                     if new_name not in known_names:
@@ -37,4 +38,5 @@ def json_handler():
         else:
             return "Request was not JSON", 400
     else:
-        return "<p>This site has no content. It's a endpoint for sysmon reports.</p>"
+        return "<p>This site has no content. " \
+               "It's a endpoint for sysmon reports.</p>"
