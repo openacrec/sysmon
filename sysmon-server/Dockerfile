@@ -1,11 +1,13 @@
 FROM ubuntu:20.04
 
+RUN adduser --disabled-password --gecos '' ami
+
 # Install Python
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     python3.9 python3-pip python3.9-dev
 
-WORKDIR /usr/src/app
+WORKDIR /home/ami
 EXPOSE 5000
 
 COPY requirements.txt .
@@ -15,7 +17,7 @@ COPY app.py .
 COPY static/chart.js static/chart.js
 COPY templates templates/
 
-#RUN adduser --disabled-password --gecos '' ami
-#USER ami
+RUN chown ami:ami -R /home/ami/
+USER ami
 
-CMD [ "flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=0.0.0.0"]
