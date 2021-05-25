@@ -63,7 +63,7 @@ def send_to_server(system_stats):
         print(req.reason)
         raise requests.exceptions.RequestsWarning
     else:
-        print(f"Updated system statistics on {environ['HOSTNAME']}.")
+        print(f"[{system_stats['cpu'][0][0]}] Updated system statistics on {environ['HOSTNAME']}.")
 
 
 @hydra.main(config_path="config/", config_name="config")
