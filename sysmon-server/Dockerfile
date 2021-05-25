@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY app.py .
-COPY static static/
+COPY static/chart.js static/chart.js
 COPY templates templates/
 
 #RUN adduser --disabled-password --gecos '' ami
