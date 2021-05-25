@@ -131,6 +131,6 @@ dmypy.json
 # App specific
 sysmon/outputs/
 sysmon/images/
-
+sysmon-server/images/
 # Jetbrains
 .idea/

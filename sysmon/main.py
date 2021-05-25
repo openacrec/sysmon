@@ -1,62 +1,89 @@
 import json
-import socket
 import time
 from os import makedirs, environ
 
 import hydra
 import nvgpu
 import psutil
+import requests.exceptions
+from requests import post
 
-system_stats = {"gpu": [], "cpu": [], "memory": [], "sensor": [], "disk": []}
-machine_name = socket.gethostname() or environ["HOST"]
 
-
-def update():
+def update(system_stats):
     """
     Collect and update the system_stats.
 
     :return:
     """
     time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    system_stats["cpu"].append([time_str, psutil.cpu_percent()])  # this gives an average
+    system_stats["cpu"].append([time_str, psutil.cpu_percent()])
     system_stats["memory"].append(psutil.virtual_memory().percent)
     system_stats["gpu"].append(nvgpu.gpu_info())
-    # system_stats["sensor"].append(psutil.sensors_temperatures())
-    # system_stats["disk"].append(psutil.disk_partitions())
+    return system_stats
 
 
-def generate_json(data_items):
+def relevant_data(system_stats, number_of_data_items):
     """
-    Generates a json containing the set amount of data_items and saves them into a file.
+    Discard data, that does not fit into the number_of_data_items.
 
-    :param data_items: The amount of data points exported. Change in config/config.yaml.
-    :return:
+    :param system_stats: Current system statistics
+    :param number_of_data_items: Number of items that are relevant
+    :return: system_stats with still relevant data inside
     """
-    filtered_stats = {}
     for key in system_stats.keys():
         # Keep only the relevant history in memory
-        system_stats[key] = system_stats[key][-data_items:]
-        filtered_stats[key] = system_stats[key]
+        system_stats[key] = system_stats[key][-number_of_data_items:]
+    return system_stats
 
-    output_dir_path = f"{hydra.utils.get_original_cwd()}/images/"
+
+def save_json_file(system_stats):
+    """
+    Generates a json containing the set amount of data_items and saves
+    them into a file.
+
+    :param system_stats: Current system statistics
+    :return:
+    """
+    output_dir_path = f"{hydra.utils.get_original_cwd()}/images"
     makedirs(output_dir_path, exist_ok=True)
-    with open(f"{output_dir_path}/{machine_name}.json", "w") as out:
-        json.dump(filtered_stats, out)
+    filename = f"{system_stats['machine_name']}.json"
+    with open(f"{output_dir_path}/{filename}", "w") as out:
+        json.dump(system_stats, out)
+
+
+def send_to_server(system_stats):
+    """
+    Send current system statistics to provided endpoint.
+
+    :param system_stats: Current system statistics
+    :return:
+    """
+    json_endpoint = environ["JSON_ENDPOINT"]
+    req = post(json_endpoint, json=system_stats)
+    if req.status_code != 200:
+        print(req.reason)
+        raise requests.exceptions.RequestsWarning
+    else:
+        print(f"[{system_stats['cpu'][0][0]}] "
+              f"Updated system statistics on {environ['HOSTNAME']}.")
 
 
 @hydra.main(config_path="config/", config_name="config")
 def sysmon_app(cfg):
     """
-    Main function. Iterates every set amount of seconds to update the resource metrics.
+    Main function. Iterates every set amount of seconds to update
+    the resource metrics.
 
     :param cfg: Config file. Gets passed through by @hydra decorator
     :return:
     """
-    print(cfg)
+    system_stats = {"machine_name": environ["HOSTNAME"], "cpu": [],
+                    "memory": [], "gpu": []}
     while True:
-        update()
-        # generate_graphs()
-        generate_json(cfg.data_items)
+        system_stats = update(system_stats)
+        system_stats = relevant_data(system_stats, cfg.number_of_data_items)
+        save_json_file(system_stats)
+        send_to_server(system_stats)
         time.sleep(cfg.update_interval_in_s)
 
 

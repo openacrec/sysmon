@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.2.0-base
+FROM ubuntu:20.04
 
 RUN adduser --disabled-password --gecos '' ami
 
@@ -8,13 +8,16 @@ RUN apt-get update && \
     python3.9 python3-pip python3.9-dev
 
 WORKDIR /home/ami
+EXPOSE 5000
 
-COPY requirements.txt ./
+COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY app.py .
+COPY static/chart.js static/chart.js
+COPY templates templates/
 
 RUN chown ami:ami -R /home/ami/
 USER ami
 
-CMD ["python3", "-u", "main.py"]
+CMD ["flask", "run", "--host=0.0.0.0"]

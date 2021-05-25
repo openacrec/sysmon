@@ -1,9 +1,28 @@
 version: '3'
 
 services:
-  sysmon-client:
-    build: ./sysmon
+  client:
+    build: sysmon
     image: sysmon-client
     container_name: sysmon-client
+    network_mode: host  # Used to send data to localhost. Can be deleted if server is reachable with a web address
+    depends_on:   # Only if this is the deployment where you want to collect your statistics / where the webserver runs
+      - server
+    runtime: nvidia
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
     environment:
-      HOST: Matthias-PC
+      HOSTNAME: asraphael
+      JSON_ENDPOINT: http://localhost:5000/post
+
+  server:
+    build: sysmon-server
+    image: sysmon-server
+    container_name: sysmon-server
+    # network_mode: host  # Used to send data to localhost. Can be deleted if server is reachable with a web address
+    ports:
+    - "5000:5000"
