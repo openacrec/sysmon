@@ -1,13 +1,20 @@
+from json import dump, load
+
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
-ALLOWED_EXTENSIONS = {'json'}
-app.config["UPLOAD_FOLDER"] = "/images"
+
+with open(f"{app.root_path}/static/machine_names.json", "w+") as names_file:
+    names_json = {"names": []}
+    dump(names_json, names_file)
 
 
 @app.route("/")
 def sysmon():
-    return render_template('index.html')
+    with open(f"{app.root_path}/static/machine_names.json", "r") as in_file:
+        machine_names = load(in_file)
+        known_names = machine_names["names"]
+    return render_template("index.html", hosts=known_names)
 
 
 @app.route("/post", methods=['GET', 'POST'])
@@ -15,41 +22,19 @@ def json_handler():
     if request.method == 'POST':
         if request.is_json:
             req = request.get_json()
-            print(req)
+            with open(f"{app.root_path}/static/{req['machine_name']}.json", "w+") as out:
+                dump(req, out)
+            with open(f"{app.root_path}/static/machine_names.json", "r") as in_file:
+                machine_names = load(in_file)
+                with open(f"{app.root_path}/static/machine_names.json", "w") as out:
+                    known_names = machine_names["names"]
+                    new_name = req["machine_name"]
+                    if new_name not in known_names:
+                        known_names.append(new_name)
+                        machine_names["names"] = known_names
+                    dump(machine_names, out)
             return "Received!", 200
         else:
             return "Request was not JSON", 400
     else:
         return "<p>This site has no content. It's a endpoint for sysmon reports.</p>"
-
-
-def receive_data():
-    pass
-
-
-with app.test_client() as test:
-    req = test.post("/post", json={
-        "machine_name": "asraphael",
-        "cpu": [
-            [
-                "2021-05-23 18:45:54",
-                17.8
-            ]
-        ],
-        "memory": [
-            71.2
-        ],
-        "gpu": [
-            [
-                {
-                    "index": "0",
-                    "type": "NVIDIA GeForce GTX 1660 Ti",
-                    "uuid": "GPU-c7b2d3ec-8b29-796e-ed4b-2b295e80d270",
-                    "mem_used": 1858,
-                    "mem_total": 6144,
-                    "mem_used_percent": 30.240885416666668
-                }
-            ]
-        ],
-    })
-    print(req)

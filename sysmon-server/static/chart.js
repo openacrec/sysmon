@@ -50,46 +50,28 @@ function render_chart(time, cpu_data, gpu_data, memory_data, machine_name) {
     });
 }
 
-// machine_name= "asraphael"
-// json_file= "static/"+machine_name+".json"
-// $.getJSON(json_file, function(data) {
-// 	   var time = data.cpu.map(function(e) {
-// 		return e[0];
-// 	   });
-// 	   var cpu_data = data.cpu.map(function(e) {
-// 	      return e[1];
-// 	   });
-//
-// 	   var gpu_data = data.gpu.map(function(e) {
-// 	      return e[0].mem_used_percent;
-// 	   });
-//
-// 	   var memory_data = data.memory.map(function(e) {
-// 	      return e;
-// 	   });
-// 	render_chart(time, cpu_data, gpu_data, memory_data, "asraphael")
-//
-// });
-
 const data_path = "static/";
-let machine_names = ["asraphael", "test"];
-for (const machine_name of machine_names) {
-    let json_file = data_path + machine_name + ".json";
-    $.getJSON(json_file, function (data) {
-        const time = data.cpu.map(function (e) {
-            return e[0];
-        });
-        const cpu_data = data.cpu.map(function (e) {
-            return e[1];
-        });
+let machine_names = [];
+$.getJSON("static/machine_names.json", function (data) {
+    machine_names = data["names"];
+    for (const machine_name of machine_names) {
+        let json_file = data_path + machine_name + ".json";
+        $.getJSON(json_file, function (data) {
+            const time = data.cpu.map(function (e) {
+                return e[0];
+            });
+            const cpu_data = data.cpu.map(function (e) {
+                return e[1];
+            });
 
-        const gpu_data = data.gpu.map(function (e) {
-            return e[0].mem_used_percent;
-        });
+            const gpu_data = data.gpu.map(function (e) {
+                return e[0].mem_used_percent;
+            });
 
-        const memory_data = data.memory.map(function (e) {
-            return e;
+            const memory_data = data.memory.map(function (e) {
+                return e;
+            });
+            render_chart(time, cpu_data, gpu_data, memory_data, machine_name)
         });
-        render_chart(time, cpu_data, gpu_data, memory_data, machine_name)
-    });
-}
+    }
+})
