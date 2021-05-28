@@ -83,19 +83,21 @@ def send_to_server(system_stats):
                                   connect=3,
                                   redirect=10,
                                   backoff_factor=0.5,
-                                  status_forcelist=
-                                  [HTTPStatus.REQUEST_TIMEOUT,
-                                   # HTTP 408
-                                   HTTPStatus.CONFLICT,
-                                   # HTTP 409
-                                   HTTPStatus.INTERNAL_SERVER_ERROR,
-                                   # HTTP 500
-                                   HTTPStatus.BAD_GATEWAY,
-                                   # HTTP 502
-                                   HTTPStatus.SERVICE_UNAVAILABLE,
-                                   # HTTP 503
-                                   HTTPStatus.GATEWAY_TIMEOUT])))
-            # HTTP 504
+                                  status_forcelist=[
+                                      HTTPStatus.REQUEST_TIMEOUT,
+                                      # HTTP 408
+                                      HTTPStatus.CONFLICT,
+                                      # HTTP 409
+                                      HTTPStatus.INTERNAL_SERVER_ERROR,
+                                      # HTTP 500
+                                      HTTPStatus.BAD_GATEWAY,
+                                      # HTTP 502
+                                      HTTPStatus.SERVICE_UNAVAILABLE,
+                                      # HTTP 503
+                                      HTTPStatus.GATEWAY_TIMEOUT
+                                      # HTTP 504
+                                  ])))
+
             re = session.post(JSON_ENDPOINT, json=system_stats)
             if re.status_code != 200:
                 print(re.reason)
