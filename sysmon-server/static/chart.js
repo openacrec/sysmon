@@ -9,7 +9,7 @@ window.chartColors = {
 };
 
 
-function render_chart(time, cpu_data, gpu_data, memory_data, machine_name) {
+function render_chart(time, cpu_data, memory_data, gpu_data, machine_name) {
     var ctx = document.getElementById('chart_' + machine_name).getContext('2d');
     var chart = new Chart(ctx, {
         type: 'line',
@@ -24,20 +24,19 @@ function render_chart(time, cpu_data, gpu_data, memory_data, machine_name) {
                     fill: false
                 },
                 {
-                    label: "GPU Percentage",
-                    backgroundColor: window.chartColors.green,
-                    borderColor: window.chartColors.green,
-                    data: gpu_data,
-                    fill: false
-                },
-                {
                     label: "Memory Percentage",
                     backgroundColor: window.chartColors.orange,
                     borderColor: window.chartColors.orange,
                     data: memory_data,
                     fill: false
                 },
-
+                {
+                    label: "GPU Percentage",
+                    backgroundColor: window.chartColors.green,
+                    borderColor: window.chartColors.green,
+                    data: gpu_data,
+                    fill: false
+                },
             ]
         },
         options: {
@@ -51,27 +50,16 @@ function render_chart(time, cpu_data, gpu_data, memory_data, machine_name) {
 }
 
 const data_path = "static/";
-let machine_names = [];
 $.getJSON("static/machine_names.json", function (data) {
-    machine_names = data["names"];
+    const machine_names = data["names"];
     for (const machine_name of machine_names) {
         let json_file = data_path + machine_name + ".json";
         $.getJSON(json_file, function (data) {
-            const time = data.cpu.map(function (e) {
-                return e[0];
-            });
-            const cpu_data = data.cpu.map(function (e) {
-                return e[1];
-            });
-
-            const gpu_data = data.gpu.map(function (e) {
-                return e[0].mem_used_percent;
-            });
-
-            const memory_data = data.memory.map(function (e) {
-                return e;
-            });
-            render_chart(time, cpu_data, gpu_data, memory_data, machine_name)
+            const time = data["time"];
+            const cpu_data = data["cpu"];
+            const memory_data = data["memory"];
+            const gpu_data = data["gpu"];
+            render_chart(time, cpu_data, memory_data, gpu_data, machine_name)
         });
     }
 })
