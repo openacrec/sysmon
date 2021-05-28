@@ -8,16 +8,17 @@ services:
     network_mode: host  # Used to send data to localhost. Can be deleted if server is reachable with a web address
     depends_on:   # Only if this is the deployment where you want to collect your statistics / where the webserver runs
       - server
-#    runtime: nvidia  # if you don't have a nvidia gpu, comment out this
-#    deploy:          # and the whole deploy block
-#      resources:
-#        reservations:
-#          devices:
-#            - capabilities: [ gpu ]
+    runtime: nvidia  # if you don't have a nvidia gpu, comment out this
+    deploy:          # and the whole deploy block
+      resources:
+        reservations:
+          devices:
+            - capabilities: [ gpu ]
     environment:
-      HOSTNAME: Matthias  # The name of the host system
+      HOSTNAME: asraphael  # The name of the host system
       JSON_ENDPOINT: http://127.0.0.1:5000/post  # Address of sysmon-server
 
+  # If you use only the client, you can comment out all of the server
   server:
     build: sysmon-server
     image: sysmon-server
