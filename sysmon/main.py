@@ -1,12 +1,19 @@
 import json
 import time
+from http import HTTPStatus
 from os import makedirs, environ
 
 import hydra
 import nvgpu
 import psutil
+import requests
 import requests.exceptions
-from requests import post
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
+
+GPU_EXISTS = True
+HOSTNAME = environ['HOSTNAME']
+JSON_ENDPOINT = environ["JSON_ENDPOINT"]
 
 
 def update(system_stats):
@@ -16,9 +23,20 @@ def update(system_stats):
     :return:
     """
     time_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    system_stats["cpu"].append([time_str, psutil.cpu_percent()])
+    system_stats["time"].append(time_str)
+    system_stats["cpu"].append(psutil.cpu_percent())
     system_stats["memory"].append(psutil.virtual_memory().percent)
-    system_stats["gpu"].append(nvgpu.gpu_info())
+    # if os.environ["NVIDIA_GPU"].lower() == "true":
+    global GPU_EXISTS
+    if GPU_EXISTS:
+        try:
+            system_stats["gpu"].append(nvgpu.gpu_info()[0]["mem_used_percent"])
+        except FileNotFoundError:
+            GPU_EXISTS = False
+            del system_stats["gpu"]
+            print("No nvidia-smi found. Do you have a Nvidia GPU and Drivers?")
+            print("If you're using Docker, be sure to use the nvidia runtime.")
+            print("If you don't have one, you can ignore this message.")
     return system_stats
 
 
@@ -31,7 +49,6 @@ def relevant_data(system_stats, number_of_data_items):
     :return: system_stats with still relevant data inside
     """
     for key in system_stats.keys():
-        # Keep only the relevant history in memory
         system_stats[key] = system_stats[key][-number_of_data_items:]
     return system_stats
 
@@ -58,14 +75,40 @@ def send_to_server(system_stats):
     :param system_stats: Current system statistics
     :return:
     """
-    json_endpoint = environ["JSON_ENDPOINT"]
-    req = post(json_endpoint, json=system_stats)
-    if req.status_code != 200:
-        print(req.reason)
-        raise requests.exceptions.RequestsWarning
-    else:
-        print(f"[{system_stats['cpu'][0][0]}] "
-              f"Updated system statistics on {environ['HOSTNAME']}.")
+    global JSON_ENDPOINT, HOSTNAME
+    try:
+        with requests.session() as session:
+            session.mount("http://", HTTPAdapter(
+                max_retries=Retry(total=5,
+                                  connect=3,
+                                  redirect=10,
+                                  backoff_factor=0.5,
+                                  status_forcelist=[
+                                      HTTPStatus.REQUEST_TIMEOUT,
+                                      # HTTP 408
+                                      HTTPStatus.CONFLICT,
+                                      # HTTP 409
+                                      HTTPStatus.INTERNAL_SERVER_ERROR,
+                                      # HTTP 500
+                                      HTTPStatus.BAD_GATEWAY,
+                                      # HTTP 502
+                                      HTTPStatus.SERVICE_UNAVAILABLE,
+                                      # HTTP 503
+                                      HTTPStatus.GATEWAY_TIMEOUT
+                                      # HTTP 504
+                                  ])))
+
+            re = session.post(JSON_ENDPOINT, json=system_stats)
+            if re.status_code != 200:
+                print(re.reason)
+                raise requests.exceptions.RequestsWarning
+            else:
+                print(f"[{system_stats['time'][-1]}] "
+                      f"Updated system statistics on {HOSTNAME}.")
+    except requests.exceptions.ConnectionError:
+        print(f"[{system_stats['time'][-1]}] "
+              f"Timed out when updating system statistics "
+              f"on {HOSTNAME}.")
 
 
 @hydra.main(config_path="config/", config_name="config")
@@ -77,8 +120,12 @@ def sysmon_app(cfg):
     :param cfg: Config file. Gets passed through by @hydra decorator
     :return:
     """
-    system_stats = {"machine_name": environ["HOSTNAME"], "cpu": [],
-                    "memory": [], "gpu": []}
+    global HOSTNAME
+    system_stats = {"machine_name": HOSTNAME,
+                    "time": [],
+                    "cpu": [],
+                    "memory": [],
+                    "gpu": []}
     while True:
         system_stats = update(system_stats)
         system_stats = relevant_data(system_stats, cfg.number_of_data_items)

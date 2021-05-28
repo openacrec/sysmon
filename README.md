@@ -12,4 +12,6 @@ We use it in our lab to monitor the workload of our machine learning servers.
 
 * Open compose.yaml
 * Change environment variables to fit your deployment
-* `docker-compose up`
+* Comment out `runtime` and `deploy` if you don't have an nvidia gpu
+* Comment out `server` if you only add a new client
+* `docker-compose up (-d)`

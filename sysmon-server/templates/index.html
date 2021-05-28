@@ -21,8 +21,9 @@
     <title>System Monitor</title>
 </head>
 <body>
+<h1>Sysmon - Server - Übersichtsseite</h1>
 {% for host in hosts %}
-<h1>{{host}}</h1>
+<h2>{{host}}</h2>
 <div class="chart-container">
     <canvas id="chart_{{host}}"></canvas>
 </div>
