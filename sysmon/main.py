@@ -1,7 +1,7 @@
 import json
 import time
 from http import HTTPStatus
-from os import makedirs, environ
+from os import environ, makedirs
 
 import hydra
 import nvgpu
@@ -26,7 +26,6 @@ def update(system_stats):
     system_stats["time"].append(time_str)
     system_stats["cpu"].append(psutil.cpu_percent())
     system_stats["memory"].append(psutil.virtual_memory().percent)
-    # if os.environ["NVIDIA_GPU"].lower() == "true":
     global GPU_EXISTS
     if GPU_EXISTS:
         try:
@@ -74,6 +73,7 @@ def send_to_server(system_stats):
 
     :param system_stats: Current system statistics
     :return:
+    :raises: requests.exceptions.ConnectionError
     """
     global JSON_ENDPOINT, HOSTNAME
     try:
@@ -100,15 +100,13 @@ def send_to_server(system_stats):
 
             re = session.post(JSON_ENDPOINT, json=system_stats)
             if re.status_code != 200:
-                print(re.reason)
-                raise requests.exceptions.RequestsWarning
+                print(re.status_code, re.reason)
             else:
                 print(f"[{system_stats['time'][-1]}] "
                       f"Updated system statistics on {HOSTNAME}.")
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         print(f"[{system_stats['time'][-1]}] "
-              f"Timed out when updating system statistics "
-              f"on {HOSTNAME}.")
+              f"Could not update system statistics on {HOSTNAME}.")
 
 
 @hydra.main(config_path="config/", config_name="config")
