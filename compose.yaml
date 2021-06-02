@@ -5,6 +5,7 @@ services:
     build: sysmon
     image: sysmon-client
     container_name: sysmon-client
+    restart: always
     network_mode: host  # Used to send data to localhost. Can be deleted if server is reachable with a web address
     runtime: nvidia  # if you don't have a nvidia gpu, comment out this
     deploy:          # and the whole deploy block
@@ -21,5 +22,6 @@ services:
 #    build: sysmon-server
 #    image: sysmon-server
 #    container_name: sysmon-server
+#    restart: always
 #    ports:
 #    - "5000:5000"
