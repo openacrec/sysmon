@@ -120,6 +120,7 @@ def sysmon_app(cfg):
     """
     global HOSTNAME
     system_stats = {"machine_name": HOSTNAME,
+                    "interval": cfg.update_interval_in_s,
                     "time": [],
                     "cpu": [],
                     "memory": [],
