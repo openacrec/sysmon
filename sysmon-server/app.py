@@ -19,10 +19,11 @@ with open(MACHINE_NAMES_FILE, "w+") as out_file:
 
 def try_strptime(time_string, time_format):
     """
+    Ties to convert the time (given as string) to time epoch.
 
     :param time_string: a string in a valid format
     :param time_format: the format used for the string
-    :return: the time as
+    :return: time as seconds
     """
     try:
         time = strptime(time_string, time_format)
@@ -91,7 +92,7 @@ def update_clients_and_times(req, names_json):
 
     :param req: the json with the new client info
     :param names_json: the json with the list of names and "last seen" times
-    :return:
+    :return: json with updated values for names or times
     """
     new_name = req["machine_name"]
     new_time = req["time"][-1]
