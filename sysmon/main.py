@@ -48,7 +48,8 @@ def relevant_data(system_stats, number_of_data_items):
     :return: system_stats with still relevant data inside
     """
     for key in system_stats.keys():
-        system_stats[key] = system_stats[key][-number_of_data_items:]
+        if isinstance(key, list):
+            system_stats[key] = system_stats[key][-number_of_data_items:]
     return system_stats
 
 
@@ -120,6 +121,7 @@ def sysmon_app(cfg):
     """
     global HOSTNAME
     system_stats = {"machine_name": HOSTNAME,
+                    "interval": cfg.update_interval_in_s,
                     "time": [],
                     "cpu": [],
                     "memory": [],

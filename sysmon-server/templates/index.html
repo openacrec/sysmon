@@ -23,7 +23,15 @@
 <body>
 <h1>Sysmon - Server - Übersichtsseite</h1>
 {% for host in hosts %}
+
+{% if host in alive %}
 <h2>{{host}}</h2>
+{% endif %}
+
+{% if host in disconnected %}
+<h2 style="background-color: #e44444;">{{host}}</h2>
+{% endif %}
+
 <div class="chart-container">
     <canvas id="chart_{{host}}"></canvas>
 </div>
