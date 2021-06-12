@@ -2,7 +2,7 @@ version: '3'
 
 services:
   client:
-    build: sysmon
+    build: sysmon-client
     image: sysmon-client
     container_name: sysmon-client
     restart: always
