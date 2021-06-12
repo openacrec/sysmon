@@ -1,0 +1,1 @@
+recursive-include src/sysmon_client/config config.yaml
