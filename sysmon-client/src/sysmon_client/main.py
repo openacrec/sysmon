@@ -1,19 +1,16 @@
 import json
 import time
 from http import HTTPStatus
-from os import environ, makedirs
+from os import makedirs
 
 import hydra
 import nvgpu
 import psutil
 import requests
-import requests.exceptions
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
 GPU_EXISTS = True
-HOSTNAME = environ['HOSTNAME']
-JSON_ENDPOINT = environ["JSON_ENDPOINT"]
 
 
 def update(system_stats):
@@ -68,15 +65,16 @@ def save_json_file(system_stats):
         json.dump(system_stats, out)
 
 
-def send_to_server(system_stats):
+def send_to_server(system_stats, server_address, client_name):
     """
     Send current system statistics to provided endpoint.
 
     :param system_stats: Current system statistics
+    :param client_name: this clients name
+    :param server_address: address of the server collecting system stats
     :return:
     :raises: requests.exceptions.ConnectionError
     """
-    global JSON_ENDPOINT, HOSTNAME
     try:
         with requests.session() as session:
             session.mount("http://", HTTPAdapter(
@@ -99,15 +97,15 @@ def send_to_server(system_stats):
                                       # HTTP 504
                                   ])))
 
-            re = session.post(JSON_ENDPOINT, json=system_stats)
+            re = session.post(server_address, json=system_stats)
             if re.status_code != 200:
                 print(re.status_code, re.reason)
             else:
                 print(f"[{system_stats['time'][-1]}] "
-                      f"Updated system statistics on {HOSTNAME}.")
+                      f"Updated system statistics on {client_name}.")
     except requests.exceptions.RequestException:
         print(f"[{system_stats['time'][-1]}] "
-              f"Could not update system statistics on {HOSTNAME}.")
+              f"Could not update system statistics on {client_name}.")
 
 
 @hydra.main(config_path="config/", config_name="config")
@@ -119,19 +117,19 @@ def sysmon_app(cfg):
     :param cfg: Config file. Gets passed through by @hydra decorator
     :return:
     """
-    global HOSTNAME
-    system_stats = {"machine_name": HOSTNAME,
-                    "interval": cfg.update_interval_in_s,
+    system_stats = {"machine_name": cfg.client.name,
+                    "interval": cfg.client.update_interval_in_s,
                     "time": [],
                     "cpu": [],
                     "memory": [],
                     "gpu": []}
     while True:
         system_stats = update(system_stats)
-        system_stats = relevant_data(system_stats, cfg.number_of_data_items)
+        system_stats = relevant_data(system_stats,
+                                     cfg.client.number_of_data_items)
         save_json_file(system_stats)
-        send_to_server(system_stats)
-        time.sleep(cfg.update_interval_in_s)
+        send_to_server(system_stats, cfg.server.address, cfg.client.name)
+        time.sleep(cfg.client.update_interval_in_s)
 
 
 if __name__ == "__main__":
