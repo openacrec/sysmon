@@ -110,7 +110,7 @@ def send_to_server(system_stats):
               f"Could not update system statistics on {HOSTNAME}.")
 
 
-@hydra.main(config_path="../../config/", config_name="config")
+@hydra.main(config_path="config/", config_name="config")
 def sysmon_app(cfg):
     """
     Main function. Iterates every set amount of seconds to update
