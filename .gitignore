@@ -132,5 +132,10 @@ dmypy.json
 sysmon-client/src/sysmon_client/outputs/
 sysmon-client/src/sysmon_client/images/
 sysmon-server/images/
+
+# For testing
+sysmon-client/tests/outputs/
+sysmon-client/tests/images/
+
 # Jetbrains
 .idea/
