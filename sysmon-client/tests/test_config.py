@@ -2,7 +2,7 @@ import unittest
 
 import hydra
 from omegaconf import OmegaConf
-import sysmon_client.main as main
+# import sysmon_client.client as client
 
 
 class TestFoundConfig(unittest.TestCase):
@@ -16,9 +16,11 @@ class TestFoundConfig(unittest.TestCase):
             cfg = hydra.compose(config_name="config")
             self.assertEqual(cfg, orig)
 
+    # This test manually start the map. Since it is designed to continue
+    # operation, this test can't be used with automated tests
     # def test_config_found(self):
     #     try:
-    #         main.sysmon_app()
+    #         client.start_reporting()
     #     except hydra.MissingConfigException:
     #         self.fail("Config file was not found.")
 
