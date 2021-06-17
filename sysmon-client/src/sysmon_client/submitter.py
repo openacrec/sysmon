@@ -50,7 +50,7 @@ def continues_submit(system_stats, server_address):
     """
     try:
         submit(system_stats, server_address)
-    except requests.exceptions.RequestException as exc:
+    except requests.exceptions.RequestException:
         print(f"[{system_stats['time']}] "
               f"Could not update system statistics on {system_stats['name']}.")
 
