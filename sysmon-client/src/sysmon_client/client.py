@@ -15,6 +15,7 @@ def start_reporting(cfg):
     system_stats = {
         "name": cfg.client.name,
         "interval": cfg.client.update_interval_in_s,
+        "endpoint_version": "v01",
         "time": collector.collect_time_string(),
         "timestamp": collector.collect_time(),
         "cpu": collector.collect_cpu(),
