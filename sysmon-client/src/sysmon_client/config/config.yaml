@@ -4,4 +4,4 @@ client:
   number_of_data_items: 200
 
 server:
-  address: http://localhost:5000/post
+  address: http://localhost:5000/v01/
