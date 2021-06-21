@@ -28,7 +28,7 @@
         <h2>{{ host }}</h2>
     {% endif %}
 
-    {% if host in disconnected %}
+    {% if host not in alive %}
         <h2 style="background-color: #e44444;">{{ host }}</h2>
     {% endif %}
 

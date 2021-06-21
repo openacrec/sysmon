@@ -1,8 +1,40 @@
-from json import dump, load
+from time import strptime, mktime
+from typing import Dict
 
 from flask import request
 
-from sysmon_server import DATA_STORAGE, MACHINE_NAMES_FILE
+from sysmon_server.client import Client
+
+
+def to_new_json_format(client_json: Dict):
+    return {
+        "name": client_json["machine_name"],
+        "interval": client_json["interval"],
+        "endpoint_version": "legacy",
+        "time": client_json["time"],
+        "timestamp": try_strptime(client_json["time"], "%Y-%m-%d %H:%M:%S"),
+        "cpu": client_json["cpu"],
+        "memory": client_json["memory"],
+        "gpu": client_json["gpu"]
+    }
+
+
+def try_strptime(time_string, time_format):
+    """
+    Tries to convert the time (given as string) to time epoch.
+
+    Only for legacy purpose. Deprecated.
+
+    :param time_string: a string in a valid format
+    :param time_format: the format used for the string
+    :return: time as seconds
+    """
+    try:
+        time = strptime(time_string, time_format)
+        time = mktime(time)
+    except ValueError:
+        time = None
+    return time
 
 
 def update_clients_and_times(req, names_json):
@@ -45,17 +77,11 @@ def json_handler():
     if request.method == 'POST':
         if request.is_json:
             req = request.get_json()
+            req = to_new_json_format(req)
 
-            with open(f"{DATA_STORAGE}/{req['machine_name']}.json", "w+") as out:
-                dump(req, out)
+            client = Client(req)
+            client.save_file()
 
-            with open(MACHINE_NAMES_FILE, "r") as names_file:
-                names_json = load(names_file)
-
-                update_clients_and_times(req, names_json)
-
-                with open(MACHINE_NAMES_FILE, "w") as out_names_file:
-                    dump(names_json, out_names_file)
             return "Received!", 200
         else:
             return "Request was not JSON", 400
