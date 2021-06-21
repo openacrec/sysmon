@@ -1,12 +1,13 @@
+import warnings
 from json import dump, load
 from os import path
 from time import strftime, strptime, localtime, mktime
-from flask import Flask, request, render_template
 
-app = Flask(__name__)
+from flask import render_template
 
-STATIC_DIR = f"{app.root_path}/static"
-MACHINE_NAMES_FILE = f"{app.root_path}/static/machine_names.json"
+from sysmon_server import app, DATA_STORAGE, MACHINE_NAMES_FILE
+from .endpoints import legacy
+
 NAMES_JSON = {"names": [], "times": []}
 
 # If you already have a list of known machines, keep it contents
@@ -19,7 +20,9 @@ with open(MACHINE_NAMES_FILE, "w+") as out_file:
 
 def try_strptime(time_string, time_format):
     """
-    Ties to convert the time (given as string) to time epoch.
+    Tries to convert the time (given as string) to time epoch.
+
+    Only for legacy purpose. Deprecated.
 
     :param time_string: a string in a valid format
     :param time_format: the format used for the string
@@ -33,10 +36,12 @@ def try_strptime(time_string, time_format):
     return time
 
 
-def check_update_timings(names, times):
+def check_update_timings_legacy(names, times):
     """
     Checks if there is a host that did not update in time.
     Default interval if no interval is specified is one day.
+
+    Only for legacy purpose. Deprecated.
 
     :param names: A list of all host names
     :param times: A list of corresponding time stamps from the latest update
@@ -50,7 +55,7 @@ def check_update_timings(names, times):
 
     for name, time in zip(names, times):
         last_time = try_strptime(time, time_format)
-        with open(f"{STATIC_DIR}/{name}.json") as host_file:
+        with open(f"{DATA_STORAGE}/{name}.json") as host_file:
             # Until all clients give an interval, we need to catch a KeyError
             try:
                 interval = load(host_file)["interval"]
@@ -70,7 +75,7 @@ def check_update_timings(names, times):
 @app.route("/")
 def sysmon():
     """
-    Reads all machine names in and returns a page with a list of those.
+    Render a site showing status of all connected clients.
 
     :return:
     """
@@ -78,71 +83,37 @@ def sysmon():
         machine_names = load(names_file)
         known_names = machine_names["names"]
         known_times = machine_names["times"]
-        alive, disconnected = check_update_timings(known_names, known_times)
+        alive, disconnected = check_update_timings_legacy(known_names,
+                                                          known_times)
     return render_template("index.html",
                            hosts=known_names,
                            alive=alive,
                            disconnected=disconnected)
 
 
-def update_clients_and_times(req, names_json):
-    """
-    New clients should go straight into the names list,
-    while old clients get there "last seen" time updated.
-
-    :param req: the json with the new client info
-    :param names_json: the json with the list of names and "last seen" times
-    :return: json with updated values for names or times
-    """
-    new_name = req["machine_name"]
-    new_time = req["time"][-1]
-    machine_names = names_json["names"]
-    machine_times = names_json["times"]
-
-    if new_name not in machine_names:
-        machine_names.append(new_name)
-        machine_times.append(new_time)
-        names_json["names"] = machine_names
-        names_json["times"] = machine_times
-    else:
-        updated_times = []
-        for name, time in zip(machine_names, machine_times):
-            if name == new_name:
-                updated_times.append(new_time)
-            else:
-                updated_times.append(time)
-        names_json["times"] = updated_times
-    return names_json
+def check_compatible_endpoint_version():
+    raise NotImplementedError
 
 
 @app.route("/post", methods=['GET', 'POST'])
-def json_handler():
+def legacy_endpoint():
     """
     Handles incoming json data. Save's each json into a file. Separately saves
     the machines names to handle the template for new, unknown hosts.
 
     :return:
     """
-    if request.method == 'POST':
-        if request.is_json:
-            req = request.get_json()
+    warnings.warn("Legacy endpoint.", DeprecationWarning)
+    return legacy.json_handler()
 
-            with open(f"{STATIC_DIR}/{req['machine_name']}.json", "w+") as out:
-                dump(req, out)
 
-            with open(MACHINE_NAMES_FILE, "r") as names_file:
-                names_json = load(names_file)
+@app.route("/api/v01", methods=['POST'])
+def v01_endpoint():
+    """
 
-                update_clients_and_times(req, names_json)
-
-                with open(MACHINE_NAMES_FILE, "w") as out_names_file:
-                    dump(names_json, out_names_file)
-            return "Received!", 200
-        else:
-            return "Request was not JSON", 400
-    else:
-        return "<p>This site has no content. " \
-               "It's a endpoint for sysmon reports.</p>"
+    :return:
+    """
+    pass
 
 
 if __name__ == '__main__':

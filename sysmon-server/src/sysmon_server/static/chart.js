@@ -41,6 +41,7 @@ function render_chart(time, cpu_data, memory_data, gpu_data, machine_name) {
         },
         options: {
             responsive: 'true',
+            maintainAspectRatio: 'false',
             title: {
                 display: true,
                 text: machine_name
