@@ -1,20 +1,23 @@
-import hydra
+"""
+Module of main functions that make up sysmon
+"""
 
 import collector
 import submitter
 
 
-@hydra.main(config_path="config", config_name="config")
-def start_reporting(cfg):
+def start_reporting(name: str, server_address: str, interval: int = 60):
     """
-    Start reporting this machines system load to the server.
+    Report's continuously the status of this machine to the sysmon_server.
 
-    :param cfg: ConfigDict. Gets passed through by @hydra decorator
+    :param name: The name of this client, that will be displayed on the server
+    :param server_address: Address, with endpoint, of the sysmon_server
+    :param interval: Number of seconds between updates
     :return:
     """
     system_stats = {
-        "name": cfg.client.name,
-        "interval": cfg.client.update_interval_in_s,
+        "name": name,
+        "interval": interval,
         "endpoint_version": "v01",
         "time": collector.collect_time_string(),
         "timestamp": collector.collect_time(),
@@ -24,8 +27,8 @@ def start_reporting(cfg):
     }
 
     while True:
-        submitter.continues_submit(system_stats, cfg.server.address)
+        submitter.continues_submit(system_stats, server_address)
 
 
 if __name__ == "__main__":
-    start_reporting()
+    start_reporting("Test", "http://localhost:5000/v01/")
