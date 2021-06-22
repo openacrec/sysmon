@@ -10,9 +10,7 @@ def accept_post():
 
     :return:
     """
-    print("Working in accept_post", flush=True)
     if request.is_json:
-        print("Working in accept_post if is_json")
         client = Client(request.get_json())
         client.save_file()
         return "Received!", 200

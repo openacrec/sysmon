@@ -34,4 +34,5 @@ def start_reporting(name: str, server_address: str, interval: int = 60):
 
 
 if __name__ == "__main__":
-    start_reporting("Test", "http://127.0.0.1:5000/api/v01", 5)
+    # start_reporting("Test", "http://127.0.0.1:5000", 5)
+    submitter.request_deletion({"name": "Test"}, "http://127.0.0.1:5000")

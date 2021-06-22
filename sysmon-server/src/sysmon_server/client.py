@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 from sysmon_server import DATA_STORAGE
 
-"""
+"""v01 json format:
 system_stats = {
         "name": name,
         "interval": interval,
