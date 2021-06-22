@@ -22,20 +22,41 @@ system_stats = {
 """
 
 
-# TODO: Actually use and update the lists, currently only the last entry is
-#  present.
-#  Properly load from disk at some point to check/get old data.
+# TODO: Limit list length
 class Client:
     """Data class that wraps Client information."""
 
-    def __init__(self, client_json: Dict):
-        self.json = client_json
+    def __init__(self, client_json: Dict, limited: bool = False):
+        """
+        Create a new client object.
 
-    @classmethod
-    def from_file(cls, filename):
-        filename = secure_filename(filename)
-        with open(f"f{DATA_STORAGE}/{filename}.json", "r") as in_file:
-            cls(load(in_file))
+        :param client_json: client json provided by api endpoints
+        :param limited: if True, client only knows the client name
+        """
+        # Try to load existing client data
+        try:
+            filename = secure_filename(client_json["name"])
+            with open(f"{DATA_STORAGE}/{filename}.json", "r") as in_file:
+                self.json = load(in_file)
+        except FileNotFoundError:
+            # New clients here, no file for them yet
+            client_json["cpu"] = [client_json["cpu"]]
+            client_json["memory"] = [client_json["memory"]]
+            client_json["gpu"] = [client_json["gpu"]]
+            self.json = client_json
+        else:
+            if not limited:
+                # If it was an old client, update it's attributes
+                self.update_all(client_json)
+
+    def update_all(self, json_data):
+        self.interval = json_data["interval"]
+        self.endpoint_version = json_data["endpoint_version"]
+        self.time = json_data["time"]
+        self.timestamp = json_data["timestamp"]
+        self.cpu = json_data["cpu"]
+        self.memory = json_data["memory"]
+        self.gpu = json_data["gpu"]
 
     @property
     def name(self) -> str:
@@ -45,17 +66,33 @@ class Client:
     def interval(self) -> int:
         return self.json["interval"]
 
+    @interval.setter
+    def interval(self, new_interval):
+        self.json["interval"] = new_interval
+
     @property
     def endpoint_version(self) -> str:
         return self.json["endpoint_version"]
+
+    @endpoint_version.setter
+    def endpoint_version(self, new_endpoint_version):
+        self.json["endpoint_version"] = new_endpoint_version
 
     @property
     def time(self) -> str:
         return self.json["time"]
 
+    @time.setter
+    def time(self, new_time):
+        self.json["time"] = new_time
+
     @property
     def timestamp(self) -> float:
         return self.json["timestamp"]
+
+    @timestamp.setter
+    def timestamp(self, new_timestamp):
+        self.json["timestamp"] = new_timestamp
 
     @property
     def cpu(self) -> List:
@@ -65,6 +102,8 @@ class Client:
     def cpu(self, new_cpu: float):
         if self.cpu:
             self.json["cpu"].append(new_cpu)
+        else:
+            self.json["cpu"] = [new_cpu]
 
     @property
     def memory(self) -> List:
@@ -72,8 +111,10 @@ class Client:
 
     @memory.setter
     def memory(self, new_memory: float):
-        if self.cpu:
+        if self.memory:
             self.json["memory"].append(new_memory)
+        else:
+            self.json["memory"] = [new_memory]
 
     @property
     def gpu(self) -> List:
@@ -81,8 +122,17 @@ class Client:
 
     @gpu.setter
     def gpu(self, new_gpu: float):
-        if self.cpu:
+        if self.gpu:
             self.json["gpu"].append(new_gpu)
+        else:
+            self.json["gpu"] = [new_gpu]
+
+    @staticmethod
+    def update_statistics(client, json_data):
+        print("working in update")
+        print(json_data)
+
+        return client
 
     def save_file(self):
         filename = secure_filename(self.name)

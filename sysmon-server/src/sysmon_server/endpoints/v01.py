@@ -11,8 +11,10 @@ def accept_post():
     :return:
     """
     if request.is_json:
+
         client = Client(request.get_json())
         client.save_file()
+
         return "Received!", 200
     else:
         return "Request was not JSON", 400

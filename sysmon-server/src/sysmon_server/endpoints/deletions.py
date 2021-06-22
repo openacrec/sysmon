@@ -10,6 +10,6 @@ def delete_client():
     :return:
     """
     if request.is_json:
-        client = Client(request.get_json())
+        client = Client(request.get_json(), limited=True)
         client.delete_file()
         return "Deletion successful", 200
