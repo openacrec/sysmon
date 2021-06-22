@@ -1,4 +1,5 @@
 import json
+import pathlib
 import time
 from typing import Dict, List
 
@@ -86,5 +87,16 @@ class Client:
         # Give 10 seconds as extra delay
         if current_time > self.timestamp + self.interval + 10:
             return False
+        # Checks if client is offline for more than 3 days
+        elif current_time > self.timestamp + (86400 * 3):
+            self.delete_file()
+            return False
         else:
             return True
+
+    def delete_file(self):
+        filename = secure_filename(self.name)
+        try:
+            pathlib.Path(f"{DATA_STORAGE}/{filename}.json").unlink()
+        except FileNotFoundError:
+            print("Could not find client data to delete.")

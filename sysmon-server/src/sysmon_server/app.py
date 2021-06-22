@@ -5,9 +5,9 @@ from typing import List
 
 from flask import render_template
 
-from sysmon_server import app, DATA_STORAGE
 from client import Client
 from endpoints import legacy, v01, deletions
+from sysmon_server import app, DATA_STORAGE
 
 
 def collect_clients() -> List:
@@ -33,6 +33,7 @@ def sysmon():
     :return:
     """
     clients = collect_clients()
+    # Returns clients that are still alive AND deletes long-gone clients
     alive = [client.name for client in clients if client.updated_in_time()]
     return render_template("index.html", hosts=clients, alive=alive)
 

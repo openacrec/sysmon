@@ -1,12 +1,15 @@
-from sysmon_server import DATA_STORAGE
 from flask import request
-from werkzeug.utils import secure_filename
-import pathlib
+
+from sysmon_server.client import Client
 
 
 def delete_client():
+    """
+    Handles deletion requests.
+
+    :return:
+    """
     if request.is_json:
-        json_data = request.get_json()
-        filename = secure_filename(json_data["name"])
-        pathlib.Path(f"{DATA_STORAGE}/{filename}.json").unlink()
+        client = Client(request.get_json())
+        client.delete_file()
         return "Deletion successful", 200
