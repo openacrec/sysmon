@@ -1,6 +1,7 @@
 import json
 import pathlib
 import time
+from json import load
 from typing import Dict, List
 
 from werkzeug.utils import secure_filename
@@ -29,6 +30,12 @@ class Client:
 
     def __init__(self, client_json: Dict):
         self.json = client_json
+
+    @classmethod
+    def from_file(cls, filename):
+        filename = secure_filename(filename)
+        with open(f"f{DATA_STORAGE}/{filename}.json", "r") as in_file:
+            cls(load(in_file))
 
     @property
     def name(self) -> str:
