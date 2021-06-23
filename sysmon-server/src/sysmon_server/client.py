@@ -100,10 +100,7 @@ class Client:
 
     @cpu.setter
     def cpu(self, new_cpu: float):
-        if self.cpu:
-            self.json["cpu"].append(new_cpu)
-        else:
-            self.json["cpu"] = [new_cpu]
+        self.json["cpu"].append(new_cpu)
 
     @property
     def memory(self) -> List:
@@ -111,10 +108,7 @@ class Client:
 
     @memory.setter
     def memory(self, new_memory: float):
-        if self.memory:
-            self.json["memory"].append(new_memory)
-        else:
-            self.json["memory"] = [new_memory]
+        self.json["memory"].append(new_memory)
 
     @property
     def gpu(self) -> List:
@@ -122,10 +116,7 @@ class Client:
 
     @gpu.setter
     def gpu(self, new_gpu: float):
-        if self.gpu:
-            self.json["gpu"].append(new_gpu)
-        else:
-            self.json["gpu"] = [new_gpu]
+        self.json["gpu"].append(new_gpu)
 
     @staticmethod
     def update_statistics(client, json_data):
