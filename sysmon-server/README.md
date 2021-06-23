@@ -12,11 +12,10 @@ Running on flask to display our lab's servers workload to decide which one has s
 Either as standalone script:
 
 ```bash
-python src/sysmon_server/app.py
+python -m flask run
 ```
 
-Build and use as Docker Container:
+Planned features:
 
-```
-docker-compose up -d
-```
+* Display running tasks (defined by client)
+* API to return list of "somewhat" idle servers, that can be worked on
