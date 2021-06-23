@@ -1,0 +1,8 @@
+recursive-include src/sysmon_server/config config.yaml
+graft src/sysmon_server/static
+graft src/sysmon_server/templates
+include LICENSE
+include pyproject.toml
+include README.md
+include setup.cfg
+include setup.py
