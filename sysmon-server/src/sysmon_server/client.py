@@ -20,9 +20,9 @@ system_stats = {
         "gpu": collector.collect_gpu_mem()
     }
 """
+NR_OF_ITEMS = 200
 
 
-# TODO: Limit list length
 class Client:
     """Data class that wraps Client information."""
 
@@ -100,7 +100,9 @@ class Client:
 
     @cpu.setter
     def cpu(self, new_cpu: float):
-        self.json["cpu"].append(new_cpu)
+        tmp = self.cpu
+        tmp.append(new_cpu)
+        self.json["cpu"] = tmp[-NR_OF_ITEMS:]
 
     @property
     def memory(self) -> List:
@@ -108,7 +110,9 @@ class Client:
 
     @memory.setter
     def memory(self, new_memory: float):
-        self.json["memory"].append(new_memory)
+        tmp = self.memory
+        tmp.append(new_memory)
+        self.json["memory"] = tmp[-NR_OF_ITEMS:]
 
     @property
     def gpu(self) -> List:
@@ -116,7 +120,9 @@ class Client:
 
     @gpu.setter
     def gpu(self, new_gpu: float):
-        self.json["gpu"].append(new_gpu)
+        tmp = self.gpu
+        tmp.append(new_gpu)
+        self.json["gpu"] = tmp[-NR_OF_ITEMS:]
 
     @staticmethod
     def update_statistics(client, json_data):
