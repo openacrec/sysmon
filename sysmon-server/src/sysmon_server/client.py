@@ -40,9 +40,10 @@ class Client:
                 self.json = load(in_file)
         except FileNotFoundError:
             # New clients here, no file for them yet
-            client_json["cpu"] = [client_json["cpu"]]
-            client_json["memory"] = [client_json["memory"]]
-            client_json["gpu"] = [client_json["gpu"]]
+            if not type(client_json["cpu"], list):
+                client_json["cpu"] = [client_json["cpu"]]
+                client_json["memory"] = [client_json["memory"]]
+                client_json["gpu"] = [client_json["gpu"]]
             self.json = client_json
         else:
             if not limited:
