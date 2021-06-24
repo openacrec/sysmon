@@ -74,4 +74,4 @@ def del_endpoint():
 
 
 if __name__ == '__main__':
-    sysmon.run(debug=False, port=5000)
+    app.run(debug=False, port=5000)
