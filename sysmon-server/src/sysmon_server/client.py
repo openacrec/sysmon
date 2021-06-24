@@ -40,10 +40,11 @@ class Client:
                 self.json = load(in_file)
         except FileNotFoundError:
             # New clients here, no file for them yet
-            if not type(client_json["cpu"], list):
-                client_json["cpu"] = [client_json["cpu"]]
-                client_json["memory"] = [client_json["memory"]]
-                client_json["gpu"] = [client_json["gpu"]]
+            # if not type(client_json["time"]) == list:
+            client_json["time"] = [client_json["time"]]
+            client_json["cpu"] = [client_json["cpu"]]
+            client_json["memory"] = [client_json["memory"]]
+            client_json["gpu"] = [client_json["gpu"]]
             self.json = client_json
         else:
             if not limited:
@@ -80,12 +81,14 @@ class Client:
         self.json["endpoint_version"] = new_endpoint_version
 
     @property
-    def time(self) -> str:
+    def time(self) -> List[str]:
         return self.json["time"]
 
     @time.setter
     def time(self, new_time):
-        self.json["time"] = new_time
+        tmp = self.time
+        tmp.append(new_time)
+        self.json["time"] = tmp[-NR_OF_ITEMS:]
 
     @property
     def timestamp(self) -> float:

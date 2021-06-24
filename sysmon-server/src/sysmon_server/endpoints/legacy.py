@@ -7,16 +7,20 @@ from sysmon_server.client import Client
 
 
 def to_new_json_format(client_json: Dict):
-    return {
+    json = {
         "name": client_json["machine_name"],
         "interval": client_json["interval"],
         "endpoint_version": "legacy",
-        "time": client_json["time"],
-        "timestamp": try_strptime(client_json["time"], "%Y-%m-%d %H:%M:%S"),
-        "cpu": client_json["cpu"],
-        "memory": client_json["memory"],
-        "gpu": client_json["gpu"]
+        "time": client_json["time"][-1],
+        "timestamp": try_strptime(client_json["time"][-1], "%Y-%m-%d %H:%M:%S"),
+        "cpu": client_json["cpu"][-1],
+        "memory": client_json["memory"][-1]
     }
+    try:
+        json["gpu"] = client_json["gpu"][-1]
+    except KeyError:
+        json["gpu"] = None
+    return json
 
 
 def try_strptime(time_string, time_format):
