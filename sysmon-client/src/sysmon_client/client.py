@@ -32,3 +32,7 @@ def start_reporting(name: str, server_address: str, interval: int = 60):
         submitter.continues_submit(system_stats, server_address)
         time.sleep(interval)
 
+
+if __name__ == "__main__":
+    # start_reporting("Test", "http://127.0.0.1:5000", 5)
+    submitter.request_deletion({"name": "NoGpu"}, "http://127.0.0.1:5000")
