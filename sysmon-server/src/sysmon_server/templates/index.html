@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="/static/chart.js"></script>
-
-<style>
-    .chart-container {
-        position: relative;
-        width: 50%;
-        height: 80vh;
-    }
-</style>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>System Monitor</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/static/chart.js"></script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 50%;
+            height: 80vh;
+        }
+    </style>
 </head>
 <body>
 <h1>Sysmon - Server - Übersichtsseite</h1>
-{% for host in hosts %}
+{% for client in clients %}
 
-    {% if host in alive %}
-        <h2>{{ host }}</h2>
+    {% if client.name in alive %}
+        <h2>{{ client.name }}</h2>
     {% endif %}
 
-    {% if host not in alive %}
-        <h2 style="background-color: #e44444;">{{ host }}</h2>
+    {% if client.name not in alive %}
+        <h2 style="background-color: #e44444;">{{ client.name }}</h2>
     {% endif %}
 
     <div class="chart-container">
-        <canvas id="chart_{{ host }}"></canvas>
+        <canvas id="chart_{{ client.name }}"></canvas>
     </div>
+    <script>
+        render_chart("Time", {{ client.cpu }}, {{ client.memory }}, {{ client.gpu }}, {{ client.name }})
+    </script>
 {% endfor %}
+
+<script type="text/javascript">
+    in_data = {
+        time: {{ time }},
+        cpu: {{ cpu }},
+        memory: {{ memory }},
+        gpu: {{ gpu }}
+    }
+</script>
 </body>
 
 </html>

@@ -26,29 +26,29 @@ NR_OF_ITEMS = 200
 class Client:
     """Data class that wraps Client information."""
 
-    def __init__(self, client_json: Dict, limited: bool = False):
+    def __init__(self, client_json: Dict, update: bool = True):
         """
         Create a new client object.
 
         :param client_json: client json provided by api endpoints
-        :param limited: if True, client only knows the client name
+        :param update: if True, client only knows the client name (optional)
         """
-        # Try to load existing client data
         try:
+            # Try to load existing client data
             filename = secure_filename(client_json["name"])
             with open(f"{DATA_STORAGE}/{filename}.json", "r") as in_file:
                 self.json = load(in_file)
         except FileNotFoundError:
             # New clients here, no file for them yet
-            # if not type(client_json["time"]) == list:
+            # Make lists for them at the first encounter
             client_json["time"] = [client_json["time"]]
             client_json["cpu"] = [client_json["cpu"]]
             client_json["memory"] = [client_json["memory"]]
             client_json["gpu"] = [client_json["gpu"]]
             self.json = client_json
         else:
-            if not limited:
-                # If it was an old client, update it's attributes
+            if update:
+                # If there is new data and it's not a limited client creation
                 self.update_all(client_json)
 
     def update_all(self, json_data):

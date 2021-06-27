@@ -20,8 +20,7 @@ def collect_clients() -> List:
     files = Path(f"{DATA_STORAGE}")
     for file in files.iterdir():
         if file.is_file():
-            with open(file) as client_file:
-                clients.append(Client(load(client_file)))
+            clients.append(Client({"name": file.stem}, update=False))
     return clients
 
 
@@ -35,7 +34,9 @@ def sysmon():
     clients = collect_clients()
     # Returns clients that are still alive AND deletes long-gone clients
     alive = [client.name for client in clients if client.updated_in_time()]
-    return render_template("index.html", hosts=clients, alive=alive)
+    return render_template("index.html",
+                           clients=clients,
+                           alive=alive,)
 
 
 def check_compatible_endpoint_version():
