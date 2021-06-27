@@ -9,58 +9,41 @@ window.chartColors = {
 };
 
 
-function render_chart(time, cpu_data, memory_data, gpu_data, machine_name) {
-    var ctx = document.getElementById('chart_' + machine_name).getContext('2d');
-    var chart = new Chart(ctx, {
+function render_chart(data_json) {
+    const ctx = document.getElementById('chart_' + data_json["name"]).getContext('2d');
+    const chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: time,
+            labels: data_json["time"],
             datasets: [
                 {
                     label: "CPU Percentage",
                     backgroundColor: window.chartColors.blue,
                     borderColor: window.chartColors.blue,
-                    data: cpu_data,
+                    data: data_json["cpu"],
                     fill: false
                 },
                 {
                     label: "Memory Percentage",
                     backgroundColor: window.chartColors.orange,
                     borderColor: window.chartColors.orange,
-                    data: memory_data,
+                    data: data_json["memory"],
                     fill: false
                 },
                 {
                     label: "GPU Percentage",
                     backgroundColor: window.chartColors.green,
                     borderColor: window.chartColors.green,
-                    data: gpu_data,
+                    data: data_json["gpu"],
                     fill: false
                 },
             ]
         },
         options: {
-            responsive: 'true',
-            maintainAspectRatio: 'false',
             title: {
                 display: true,
-                text: machine_name
-            },
+                text: data_json["name"]
+            }
         }
     });
 }
-
-const data_path = "static/";
-$.getJSON("static/machine_names.json", function (data) {
-    const machine_names = data["names"];
-    for (const machine_name of machine_names) {
-        let json_file = data_path + machine_name + ".json";
-        $.getJSON(json_file, function (data) {
-            const time = data["time"];
-            const cpu_data = data["cpu"];
-            const memory_data = data["memory"];
-            const gpu_data = data["gpu"];
-            render_chart(time, cpu_data, memory_data, gpu_data, machine_name)
-        });
-    }
-})

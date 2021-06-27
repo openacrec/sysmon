@@ -9,43 +9,36 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="/static/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
 
     <style>
-        .chart-container {
-            position: relative;
-            width: 50%;
-            height: 80vh;
-        }
+
     </style>
 </head>
 <body>
-<h1>Sysmon - Server - Übersichtsseite</h1>
-{% for client in clients %}
+    <h1>Sysmon - Server - Übersichtsseite</h1>
+    {% for client in clients %}
 
-    {% if client.name in alive %}
-        <h2>{{ client.name }}</h2>
-    {% endif %}
+        {% if client.name in alive %}
 
-    {% if client.name not in alive %}
-        <h2 style="background-color: #e44444;">{{ client.name }}</h2>
-    {% endif %}
+            <h2>{{ client.name }}</h2>
 
-    <div class="chart-container">
-        <canvas id="chart_{{ client.name }}"></canvas>
-    </div>
-    <script>
-        render_chart("Time", {{ client.cpu }}, {{ client.memory }}, {{ client.gpu }}, {{ client.name }})
-    </script>
-{% endfor %}
+        {% endif %}
 
-<script type="text/javascript">
-    in_data = {
-        time: {{ time }},
-        cpu: {{ cpu }},
-        memory: {{ memory }},
-        gpu: {{ gpu }}
-    }
-</script>
+        {% if client.name not in alive %}
+
+            <h2 id="dead_client">{{ client.name }}</h2>
+
+        {% endif %}
+
+        <div class="chart-container">
+            <canvas id="chart_{{ client.name }}"></canvas>
+        </div>
+
+        <script>
+            render_chart({{ client.json | tojson }})
+        </script>
+    {% endfor %}
 </body>
 
 </html>

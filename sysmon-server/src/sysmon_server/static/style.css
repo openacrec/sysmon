@@ -1,0 +1,9 @@
+.chart-container {
+    position: relative;
+    width: 50%;
+    height: 80%;
+}
+
+#dead_client {
+    background-color: #e44444;
+}
