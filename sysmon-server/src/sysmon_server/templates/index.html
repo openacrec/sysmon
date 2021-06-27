@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>System Monitor</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="/static/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+
+    </style>
+</head>
+<body>
+<h1>Sysmon - Server - Übersichtsseite</h1>
+{% for client in clients %}
+
+    {% if client.name in alive %}
+
+        <h2>{{ client.name }}</h2>
+
+    {% endif %}
+
+    {% if client.name not in alive %}
+
+        <h2 id="dead_client">{{ client.name }}</h2>
+
+    {% endif %}
+
+    <div class="chart-container">
+        <canvas id="chart_{{ client.name }}"></canvas>
+    </div>
+
+    <script>
+        render_chart({{ client.json | tojson }})
+    </script>
+{% endfor %}
+</body>
+
+</html>

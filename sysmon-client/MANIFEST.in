@@ -1,0 +1,6 @@
+recursive-include src/sysmon_client/config config.yaml
+include LICENSE
+include pyproject.toml
+include README.md
+include setup.cfg
+include setup.py

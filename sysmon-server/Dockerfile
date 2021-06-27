@@ -13,9 +13,9 @@ EXPOSE 5000
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY app.py .
-COPY static/chart.js static/chart.js
-COPY templates templates/
+COPY src/sysmon_server/app.py .
+COPY src/sysmon_server/static/chart.js static/chart.js
+COPY src/sysmon_server/templates templates/
 
 RUN chown ami:ami -R /home/ami/
 USER ami

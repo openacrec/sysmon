@@ -12,8 +12,8 @@ WORKDIR /home/ami
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY main.py ./
-COPY config ./config
+COPY src/sysmon_client/main.py ./
+COPY src/sysmon_client/config ./config
 
 RUN chown ami:ami -R /home/ami/
 USER ami

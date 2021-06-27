@@ -129,8 +129,6 @@ dmypy.json
 .pyre/
 
 # App specific
-sysmon/outputs/
-sysmon/images/
-sysmon-server/images/
+
 # Jetbrains
 .idea/

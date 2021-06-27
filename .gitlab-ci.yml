@@ -28,3 +28,10 @@ lint:
     - pip install flake8
     - flake8 --exclude=./venv
 
+interrogate:
+  script:
+    - pip install interrogate
+    - interrogate -v --fail-under 0 --exclude docs/ -g .
+  artifacts:
+    paths:
+      - interrogate_badge.svg
