@@ -17,7 +17,6 @@ def start_reporting(name: str, server_address: str, interval: int = 60):
     :return:
     """
     while True:
-
         system_stats = {
             "name": name,
             "interval": interval,

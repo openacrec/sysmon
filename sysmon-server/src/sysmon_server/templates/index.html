@@ -16,29 +16,29 @@
     </style>
 </head>
 <body>
-    <h1>Sysmon - Server - Übersichtsseite</h1>
-    {% for client in clients %}
+<h1>Sysmon - Server - Übersichtsseite</h1>
+{% for client in clients %}
 
-        {% if client.name in alive %}
+    {% if client.name in alive %}
 
-            <h2>{{ client.name }}</h2>
+        <h2>{{ client.name }}</h2>
 
-        {% endif %}
+    {% endif %}
 
-        {% if client.name not in alive %}
+    {% if client.name not in alive %}
 
-            <h2 id="dead_client">{{ client.name }}</h2>
+        <h2 id="dead_client">{{ client.name }}</h2>
 
-        {% endif %}
+    {% endif %}
 
-        <div class="chart-container">
-            <canvas id="chart_{{ client.name }}"></canvas>
-        </div>
+    <div class="chart-container">
+        <canvas id="chart_{{ client.name }}"></canvas>
+    </div>
 
-        <script>
-            render_chart({{ client.json | tojson }})
-        </script>
-    {% endfor %}
+    <script>
+        render_chart({{ client.json | tojson }})
+    </script>
+{% endfor %}
 </body>
 
 </html>

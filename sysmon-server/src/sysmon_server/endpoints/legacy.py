@@ -12,7 +12,7 @@ def to_new_json_format(client_json: Dict):
         "interval": client_json["interval"],
         "endpoint_version": "legacy",
         "time": client_json["time"][-1],
-        "timestamp": try_strptime(client_json["time"][-1], "%Y-%m-%d %H:%M:%S"),
+        "timestamp": str_to_unix(client_json["time"][-1], "%Y-%m-%d %H:%M:%S"),
         "cpu": client_json["cpu"][-1],
         "memory": client_json["memory"][-1]
     }
@@ -23,7 +23,7 @@ def to_new_json_format(client_json: Dict):
     return json
 
 
-def try_strptime(time_string, time_format):
+def str_to_unix(time_string, time_format):
     """
     Tries to convert the time (given as string) to time epoch.
 

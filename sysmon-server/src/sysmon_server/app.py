@@ -1,5 +1,4 @@
 import warnings
-from json import load
 from pathlib import Path
 from typing import List
 
@@ -36,7 +35,7 @@ def sysmon():
     alive = [client.name for client in clients if client.updated_in_time()]
     return render_template("index.html",
                            clients=clients,
-                           alive=alive,)
+                           alive=alive, )
 
 
 def check_compatible_endpoint_version():
@@ -50,7 +49,7 @@ def legacy_endpoint():
 
     :return: status code
     """
-    warnings.warn("Legacy endpoint.", DeprecationWarning)
+    warnings.warn("Legacy endpoint was used.", DeprecationWarning)
     return legacy.json_handler()
 
 

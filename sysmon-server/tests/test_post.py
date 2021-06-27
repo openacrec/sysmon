@@ -19,4 +19,3 @@ if __name__ == "__main__":
     send_test("asraphael", "2021-05-23 18:45:54", 20, 30, 40)
     send_test("Matthias-PC", "2021-05-24 18:45:54", 25, 35, 12.5)
     send_test("NoGpu", "2021-05-24 18:45:54", 25, 35, None)
-
