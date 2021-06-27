@@ -6,8 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>System Monitor</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.4.0/chart.min.js"></script>
     <script src="/static/chart.js"></script>
     <link rel="stylesheet" href="/static/style.css">
 
@@ -16,7 +15,7 @@
     </style>
 </head>
 <body>
-<h1>Sysmon - Server - Übersichtsseite</h1>
+<h1>Sysmon - Server - Overview</h1>
 {% for client in clients %}
 
     {% if client.name in alive %}
