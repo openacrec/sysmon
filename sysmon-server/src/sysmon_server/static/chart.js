@@ -8,7 +8,6 @@ window.chartColors = {
     grey: 'rgb(201, 203, 207)'
 };
 
-
 function render_chart(data_json) {
     const ctx = document.getElementById('chart_' + data_json["name"]).getContext('2d');
     const chart = new Chart(ctx, {
@@ -43,6 +42,9 @@ function render_chart(data_json) {
             title: {
                 display: true,
                 text: data_json["name"]
+            },
+            scales: {
+                yAxes: [{ticks: {beginAtZero: true}}]
             }
         }
     });
