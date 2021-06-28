@@ -44,8 +44,11 @@ function render_chart(data_json) {
                 text: data_json["name"]
             },
             scales: {
-                yAxes: [{ticks: {beginAtZero: true}}]
-            }
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true
         }
     });
 }
