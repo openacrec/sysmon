@@ -1,8 +1,51 @@
-.chart-container {
-    position: relative;
-    width: 50%;
-    height: 80%;
+@media (min-width: 320px) {
+    /* smartphones, iPhone, portrait 480x320 phones */
+    .chart-container {
+        position: relative;
+        width: 100%;
+    }
 }
+
+@media (min-width: 481px) {
+    /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */
+    .chart-container {
+        position: relative;
+        width: 90%;
+    }
+}
+
+@media (min-width: 641px) {
+    /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */
+    .chart-container {
+        position: relative;
+        width: 80%;
+    }
+}
+
+@media (min-width: 961px) {
+    /* tablet, landscape iPad, lo-res laptops ands desktops */
+    .chart-container {
+        position: relative;
+        width: 70%;
+    }
+}
+
+@media (min-width: 1025px) {
+    /* big landscape tablets, laptops, and desktops */
+    .chart-container {
+        position: relative;
+        width: 60%;
+    }
+}
+
+@media (min-width: 1281px) {
+    /* hi-res laptops and desktops */
+    .chart-container {
+        position: relative;
+        width: 45%;
+    }
+}
+
 
 #dead_client {
     background-color: #e44444;
