@@ -48,7 +48,8 @@ function render_chart(data_json) {
                     beginAtZero: true
                 }
             },
-            responsive: true
+            responsive: true,
+            maintainAspectRatio: false
         }
     });
 }

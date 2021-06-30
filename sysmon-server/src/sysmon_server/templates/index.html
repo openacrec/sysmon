@@ -18,13 +18,13 @@
 
     {% if client.name in alive %}
 
-        <h2>{{ client.name }}</h2>
+        <h2 class="client" id="alive_client">{{ client.name }}  <span class="status_circle" id="alive_client">⬤</span></h2>
 
     {% endif %}
 
     {% if client.name not in alive %}
 
-        <h2 id="dead_client">{{ client.name }}</h2>
+        <h2 class="client" id="dead_client">{{ client.name }}  <span class="status_circle" id="dead_client">⬤</span></h2>
 
     {% endif %}
 

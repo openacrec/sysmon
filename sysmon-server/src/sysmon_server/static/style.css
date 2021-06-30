@@ -3,6 +3,7 @@
     .chart-container {
         position: relative;
         width: 100%;
+        height: 50vh;
     }
 }
 
@@ -11,6 +12,8 @@
     .chart-container {
         position: relative;
         width: 90%;
+        height: 50vh;
+
     }
 }
 
@@ -19,6 +22,7 @@
     .chart-container {
         position: relative;
         width: 80%;
+        height: 50vh;
     }
 }
 
@@ -27,6 +31,7 @@
     .chart-container {
         position: relative;
         width: 70%;
+        height: 50vh;
     }
 }
 
@@ -35,6 +40,7 @@
     .chart-container {
         position: relative;
         width: 60%;
+        height: 50vh;
     }
 }
 
@@ -43,10 +49,34 @@
     .chart-container {
         position: relative;
         width: 45%;
+        height: 50vh;
     }
 }
 
+.client {
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 25px;
+    border: 2px solid;
+}
+
+#alive_client {
+    border-color: #49b61f;
+}
 
 #dead_client {
-    background-color: #e44444;
+    border-color: #de6262;
+}
+
+span.status_circle {
+    font-size: 85%;
+}
+
+span#alive_client {
+    color: #49b61f;
+}
+
+span#dead_client {
+    color: #de6262;
 }
