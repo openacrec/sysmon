@@ -1,9 +1,85 @@
-.chart-container {
-    position: relative;
-    width: 50%;
-    height: 80%;
+@media (min-width: 320px) {
+    /* smartphones, iPhone, portrait 480x320 phones */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 50vh;
+    }
+}
+
+@media (min-width: 481px) {
+    /* portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide. */
+    .chart-container {
+        position: relative;
+        width: 90%;
+        height: 50vh;
+
+    }
+}
+
+@media (min-width: 641px) {
+    /* portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 or 854x480 phones */
+    .chart-container {
+        position: relative;
+        width: 80%;
+        height: 50vh;
+    }
+}
+
+@media (min-width: 961px) {
+    /* tablet, landscape iPad, lo-res laptops ands desktops */
+    .chart-container {
+        position: relative;
+        width: 70%;
+        height: 50vh;
+    }
+}
+
+@media (min-width: 1025px) {
+    /* big landscape tablets, laptops, and desktops */
+    .chart-container {
+        position: relative;
+        width: 60%;
+        height: 50vh;
+    }
+}
+
+@media (min-width: 1281px) {
+    /* hi-res laptops and desktops */
+    .chart-container {
+        position: relative;
+        width: 45%;
+        height: 50vh;
+    }
+}
+
+.client {
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 3px 10px;
+    border-radius: 25px;
+    border: 2px solid;
+}
+
+#alive_client {
+    border-color: #49b61f;
 }
 
 #dead_client {
-    background-color: #e44444;
+    border-color: #de6262;
+}
+
+span.status_circle {
+    height: 17px;
+    width: 17px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+span#alive_client {
+    background-color: #49b61f;
+}
+
+span#dead_client {
+    background-color: #de6262;
 }
