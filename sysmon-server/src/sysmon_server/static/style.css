@@ -56,7 +56,7 @@
 .client {
     width: -moz-fit-content;
     width: fit-content;
-    padding: 5px 10px;
+    padding: 3px 10px;
     border-radius: 25px;
     border: 2px solid;
 }
@@ -66,17 +66,21 @@
 }
 
 #dead_client {
+
     border-color: #de6262;
 }
 
 span.status_circle {
-    font-size: 85%;
+    height: 17px;
+    width: 17px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
 span#alive_client {
-    color: #49b61f;
+    background-color: #49b61f;
 }
 
 span#dead_client {
-    color: #de6262;
+    background-color: #de6262;
 }
