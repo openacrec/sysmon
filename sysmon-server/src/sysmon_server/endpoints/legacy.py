@@ -9,13 +9,22 @@ from sysmon_server.client import Client
 def to_new_json_format(client_json: Dict):
     json = {
         "name": client_json["machine_name"],
-        "interval": client_json["interval"],
         "endpoint_version": "legacy",
         "time": client_json["time"][-1],
         "timestamp": str_to_unix(client_json["time"][-1], "%Y-%m-%d %H:%M:%S"),
         "cpu": client_json["cpu"][-1],
         "memory": client_json["memory"][-1]
     }
+    # Catch: No interval sent or list sent instead of int
+    try:
+        json["interval"] = client_json["interval"]
+        if type(json["interval"]) == list:
+            json["interval"] = json["interval"][-1]
+    except KeyError:
+        json["interval"] = 86400
+
+    # Previously instead of None the whole gpu key was deleted
+    # if no gpu was found
     try:
         json["gpu"] = client_json["gpu"][-1]
     except KeyError:
