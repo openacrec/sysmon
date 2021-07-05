@@ -3,7 +3,7 @@ Module of main functions that make up sysmon
 """
 import time
 
-import collector
+from collector import Collector
 import submitter
 
 
@@ -17,21 +17,11 @@ def start_reporting(name: str, server_address: str, interval: int = 60):
     :return:
     """
     while True:
-        system_stats = {
-            "name": name,
-            "interval": interval,
-            "endpoint_version": "v01",
-            "time": collector.collect_time_string(),
-            "timestamp": collector.collect_time(),
-            "cpu": collector.collect_cpu(),
-            "memory": collector.collect_memory(),
-            "gpu": collector.collect_gpu_mem()
-        }
-
-        submitter.continues_submit(system_stats, server_address)
+        system_stats = Collector(name, interval)
+        submitter.continues_submit(system_stats.json, server_address)
         time.sleep(interval)
 
 
 if __name__ == "__main__":
-    # start_reporting("Test", "http://127.0.0.1:5000", 5)
-    submitter.request_deletion({"name": "NoGpu"}, "http://127.0.0.1:5000")
+    start_reporting("Test", "http://127.0.0.1:5000", 5)
+    # submitter.request_deletion({"name": "NoGpu"}, "http://127.0.0.1:5000")
