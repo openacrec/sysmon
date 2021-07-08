@@ -54,6 +54,7 @@ class Client:
     def update_all(self, json_data):
         self.interval = json_data["interval"]
         self.endpoint_version = json_data["endpoint_version"]
+        self.address = json_data["address"]
         self.time = json_data["time"]
         self.timestamp = json_data["timestamp"]
         self.cpu = json_data["cpu"]
@@ -71,6 +72,14 @@ class Client:
     @interval.setter
     def interval(self, new_interval):
         self.json["interval"] = new_interval
+
+    @property
+    def address(self):
+        return self.json["address"]
+
+    @address.setter
+    def address(self, new_address: str):
+        self.json["address"] = new_address
 
     @property
     def endpoint_version(self) -> str:

@@ -10,6 +10,7 @@ def to_new_json_format(client_json: Dict):
     json = {
         "name": client_json["machine_name"],
         "endpoint_version": "legacy",
+        "address": client_json["address"],
         "time": client_json["time"][-1],
         "timestamp": str_to_unix(client_json["time"][-1], "%Y-%m-%d %H:%M:%S"),
         "cpu": client_json["cpu"][-1],
@@ -90,6 +91,7 @@ def json_handler():
     if request.method == 'POST':
         if request.is_json:
             req = request.get_json()
+            req["address"] = request.remote_addr
             req = to_new_json_format(req)
 
             client = Client(req)

@@ -11,8 +11,11 @@ def accept_post():
     :return:
     """
     if request.is_json:
-
-        client = Client(request.get_json())
+        req = request.get_json()
+        # Add the address of the remote
+        # Needed to have address for remote execution from client
+        req["address"] = request.remote_addr
+        client = Client(req)
         client.save_file()
 
         return "Received!", 200
