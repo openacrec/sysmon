@@ -2,7 +2,7 @@
 Establish remote connection and issue commands over ssh
 """
 from pathlib import Path
-from typing import List
+
 import spur
 
 
@@ -18,7 +18,8 @@ class Remote:
                  username: str,
                  password: str = None,
                  key_file: str or Path = None,
-                 port: int = 22):
+                 port: int = 22,
+                 do_connection_test: bool = True):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -43,12 +44,20 @@ class Remote:
                                    private_key_file=self.key_file,
                                    port=self.port)
 
-        self.test_connection()
+        if do_connection_test:
+            self.test_connection()
 
     def test_connection(self):
         """Run simple test command, errors out if authentication fails."""
         with self.shell as shell:
             shell.run(["pwd"])
+
+    def __eq__(self, other):
+        """Assume a remote to be the same if these conditions are met."""
+        hostnames = self.hostname == other.hostname
+        usernames = self.username == other.username
+        ports = self.port == other.port
+        return hostnames and usernames and ports
 
 
 if __name__ == '__main__':
