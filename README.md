@@ -23,4 +23,4 @@ Some documentation. Mainly about the client, since you can and will need to impo
 ## Distribution
 
 The plan is to have both, client and server, available via `pip install`.  
-While currently not maintained since we are changing a lot in ths early stages, you can later clone and build docker images of sysmon. Please not that for gpu statistics in Docker the gpu must be accessible by Docker and the running container.
+While currently not maintained since we are changing a lot in the early stages, you can later clone and build docker images of sysmon. Please note that for gpu statistics in Docker the gpu must be accessible by Docker and the running container.
