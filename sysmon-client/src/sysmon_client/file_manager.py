@@ -1,43 +1,75 @@
 from pathlib import Path
+from typing import List
+
+import spur
+
+from .remote import Remote
 
 
 class FileManager:
     def __init__(self,
                  source: str,
                  destination: str,
-                 auto_split: int = 1,
-                 create_dir: bool = False):
+                 remotes: List[Remote],
+                 auto_split: bool = False):
+
         self.source = Path(source).expanduser().resolve()
         if not self.source.exists():
             raise FileNotFoundError(self.source)
-        self.destination = Path(destination).expanduser().resolve()
+
+        self.destination = Path(destination)
         # if not self.destination.exists():
         #     # Need a way to check on remote
         #     raise FileNotFoundError(self.destination)
-        self.create_dir = create_dir
 
+        self.remotes = remotes
         self.auto_split = auto_split
-        if self.auto_split > 1:
+
+        self.splitted: List[List[Path]] = []
+
+        self.files = []
+        if self.source.is_dir():
+            self.get_files(self.source)
+        elif self.source.is_file():
+            self.files.append(self.source)
+
+        if self.auto_split:
             # Prepare a list where each sublist goes to another remote
-            self.splitted = []
-            for _ in range(self.auto_split):
+            for _ in self.remotes:
                 self.splitted.append([])
-            self.split_files_up(self.source)
+            self.split_files_up()
+        else:
+            self.splitted = [self.files]
 
-    def split_files_up(self, folder: Path):
-        if not folder.is_dir():
-            raise NotADirectoryError("To auto split you have to give a directory path.")
+    def get_files(self, folder: Path):
+        for file in folder.iterdir():
+            if file.is_file():
+                self.files.append(file)
+            elif file.is_dir():
+                self.get_files(file)
 
-        # This loop does not split perfectly, as i resets for each directory, if there
-        # are subdirectories
-        for i, item in enumerate(folder.iterdir()):
+    def split_files_up(self):
+        for i, item in enumerate(self.files):
             if item.is_file():
-                self.splitted[i % self.auto_split].append(item.name)
-            if item.is_dir():
-                self.split_files_up(item)
+                self.splitted[i % len(self.remotes)].append(item.name)
 
-    def copy_files_to_servers(self):
+    def copy_to_remote(self):
         # Probably getting Remote object, that will actually handle logic
         # Need to see, if we need a self.server(s) for that, then no need for
         # separate number of servers input
-        pass
+        files = self.splitted
+        with spur.LocalShell() as shell:
+            for file_index, remote in enumerate(self.remotes):
+                source = " ".join([str(file) for file in files[file_index]])
+                print("Source: ", source)
+                print("Destination: ", self.destination)
+                shell.run([
+                    "scp", "-r",
+                    self.source,
+                    f"{remote.username}@{remote.hostname}:{self.destination}"
+                ])
+        # TODO: Add better error if no directory there
+        # TODO: If copying a directory, maybe create it using sth like:
+        # $ scp -pr /source/directory user@host:the/target/directory
+
+        # TODO: Let scp handle folders, just add -r if its a folder!

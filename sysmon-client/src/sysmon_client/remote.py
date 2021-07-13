@@ -12,6 +12,9 @@ import spur
 # login information multiple times (in code)
 
 
+# TODO: Match/Identify with what is what on server side
+
+
 class Remote:
     def __init__(self,
                  hostname: str,
@@ -37,7 +40,6 @@ class Remote:
         self.port = port
 
         # Enables arbitrary execution on remote.
-        self.local_shell = spur.LocalShell()
         self.shell = spur.SshShell(hostname=self.hostname,
                                    username=self.username,
                                    password=self.password,

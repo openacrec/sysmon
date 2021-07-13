@@ -17,7 +17,6 @@ class Task:
     def __init__(self, task_name: str):
         self.task_name = task_name
         self.number_of_machines = 0
-        self.to_copy = []
         self.status = TaskStatus.UNKNOWN
         self.remotes = []
 
@@ -45,15 +44,13 @@ class Task:
     def copy(self,
              source: str,
              destination: str,
-             auto_split: int = 1,
-             create_dir: bool = False):
+             auto_split: bool = False):
         """
         Copy to every specified remote when task is started.
 
         :param source: path to file/folder
         :param destination: remote path, relative to home (~, default) or root (/)
         :param auto_split: Split folders into equal chunks
-        :param create_dir: Should the directory be created if it does not exist?
         :return:
         """
         # Copy files to remote machines
@@ -62,7 +59,8 @@ class Task:
         # Possible structure, a sublist for each remote machine
 
         # Probably separate this logic and put it into a submodule
-        self.to_copy.append(FileManager(source,
-                                        destination,
-                                        auto_split,
-                                        create_dir))
+        files = FileManager(source,
+                            destination,
+                            self.remotes,
+                            auto_split)
+        files.copy_to_remote()
