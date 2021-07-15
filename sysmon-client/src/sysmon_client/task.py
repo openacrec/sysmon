@@ -5,6 +5,7 @@ Define and handle definition of a Task
 from pathlib import Path
 from typing import List
 import spur
+import sys
 
 from .file_manager import FileManager
 from .remote import Remote
@@ -68,19 +69,22 @@ class Task:
                             auto_split)
         files.copy_to_remote()
 
-    def run(self, filename: str, args: List[str] = None, python_version: float = 3):
+    def run(self, filepath: str,
+            args: List[str] = None,
+            python_version: float = 3,
+            use_stdout: bool = True):
         """
         Run a python file on all added remotes.
 
-        :param filename: Remote path of the python file to execute.
+        :param filepath: Remote path of the python file to execute.
         :param args: Additional command line arguments.
         :param python_version: Specify the python version to use.
+        :param use_stdout: If you want to print results to stdout.
+
         :return:
         """
-        # TODO: Remember where files got copied? Only need filename this way?
-        # What if there are two equally named python files?...
         # TODO: See if you can test if the python version is available
-        command = [f"python{python_version}", filename]
+        command = [f"python{python_version}", filepath]
         if args:
             command.extend(args)
         for remote in self.remotes:
@@ -90,5 +94,13 @@ class Task:
                                 private_key_file=remote.key_file,
                                 port=remote.port)
             with ssh:
-                re = ssh.run(command)
-            self.output = re.output  # Todo: Change this! Maybe yield? Define in init?
+                if use_stdout:
+                    stdout = sys.stdout
+                else:
+                    stdout = None
+
+                self.status = TaskStatus.RUNNING
+                re = ssh.run(command, stdout=stdout, encoding="utf-8")
+
+                self.output.append(re.output)
+        self.status = TaskStatus.FINISHED
