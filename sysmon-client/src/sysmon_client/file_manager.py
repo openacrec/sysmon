@@ -51,7 +51,7 @@ class FileManager:
     def split_files_up(self):
         for i, item in enumerate(self.files):
             if item.is_file():
-                self.splitted[i % len(self.remotes)].append(item.name)
+                self.splitted[i % len(self.remotes)].append(item)
 
     def copy_to_remote(self):
         # Probably getting Remote object, that will actually handle logic
