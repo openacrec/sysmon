@@ -39,20 +39,19 @@ class Remote:
             self.key_file = None
         self.port = port
 
-        # Enables arbitrary execution on remote.
-        self.shell = spur.SshShell(hostname=self.hostname,
-                                   username=self.username,
-                                   password=self.password,
-                                   private_key_file=self.key_file,
-                                   port=self.port)
-
         if do_connection_test:
             self.test_connection()
 
     def test_connection(self):
         """Run simple test command, errors out if authentication fails."""
-        with self.shell as shell:
+        shell = spur.SshShell(hostname=self.hostname,
+                              username=self.username,
+                              password=self.password,
+                              private_key_file=self.key_file,
+                              port=self.port)
+        with shell:
             shell.run(["pwd"])
+            print(f"Connection with remote {self.hostname} successfully established.")
 
     def __eq__(self, other):
         """Assume a remote to be the same if these conditions are met."""
