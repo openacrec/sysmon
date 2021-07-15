@@ -57,12 +57,8 @@ class FileManager:
         # Probably getting Remote object, that will actually handle logic
         # Need to see, if we need a self.server(s) for that, then no need for
         # separate number of servers input
-        files = self.splitted
         with spur.LocalShell() as shell:
             for file_index, remote in enumerate(self.remotes):
-                source = " ".join([str(file) for file in files[file_index]])
-                print("Source: ", source)
-                print("Destination: ", self.destination)
                 shell.run([
                     "scp", "-r",
                     self.source,
