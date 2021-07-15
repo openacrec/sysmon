@@ -2,10 +2,11 @@
 Define and handle definition of a Task
 """
 
+import sys
 from pathlib import Path
 from typing import List
+
 import spur
-import sys
 
 from .file_manager import FileManager
 from .remote import Remote
@@ -81,6 +82,12 @@ class Task:
         command = [f"python{python_version}", filepath]
         if args:
             command.extend(args)
+
+        if use_stdout:
+            stdout = sys.stdout
+        else:
+            stdout = None
+
         for remote in self.remotes:
             ssh = spur.SshShell(hostname=remote.hostname,
                                 username=remote.username,
@@ -88,11 +95,6 @@ class Task:
                                 private_key_file=remote.key_file,
                                 port=remote.port)
             with ssh:
-                if use_stdout:
-                    stdout = sys.stdout
-                else:
-                    stdout = None
-
                 self.status = TaskStatus.RUNNING
                 re = ssh.run(command, stdout=stdout, encoding="utf-8")
 

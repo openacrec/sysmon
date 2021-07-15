@@ -9,7 +9,6 @@ task.add_remote("asraphael.uni-koblenz.de", "matthias")
 task.copy("~/test_script.py", "test_sysmon/test_script.py")
 task.copy("~/testdata", "test_sysmon/")
 
-
 # task.install_req(file or list of modules)
 
 task.run("test_sysmon/test_script.py")
