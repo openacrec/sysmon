@@ -18,9 +18,9 @@ from .task_status import TaskStatus
 class Task:
     def __init__(self, task_name: str):
         self.task_name = task_name
-        self.number_of_machines = 0
         self.status = TaskStatus.UNKNOWN
         self.remotes: List[Remote] = []
+        self.output = []
 
     def add_remote(self,
                    hostname: str,
@@ -61,6 +61,7 @@ class Task:
         # Possible structure, a sublist for each remote machine
 
         # Probably separate this logic and put it into a submodule
+        self.status = TaskStatus.COPYING
         files = FileManager(source,
                             destination,
                             self.remotes,

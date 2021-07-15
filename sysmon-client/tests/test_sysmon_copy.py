@@ -14,4 +14,5 @@ task.copy("~/testdata", "test_sysmon/")
 
 task.run("test_sysmon/test_script.py")
 
-print(task.output)  # can this be yielded from a generator? or only after task finished?
+# can this be yielded from a generator? or only after task finished?
+print(task.output[0])
