@@ -56,12 +56,6 @@ class Task:
         :param auto_split: Split folders into equal chunks
         :return:
         """
-        # Copy files to remote machines
-        # If told, separate into "equal" chunks of data
-        # "equal" as in number of folders or number of files
-        # Possible structure, a sublist for each remote machine
-
-        # Probably separate this logic and put it into a submodule
         self.status = TaskStatus.COPYING
         files = FileManager(source,
                             destination,
