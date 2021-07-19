@@ -3,6 +3,7 @@ Establish remote connection and issue commands over ssh
 """
 import sys
 from pathlib import Path
+from typing import List
 
 import spur
 
@@ -57,7 +58,7 @@ class Remote:
             shell.run(["pwd"])
             print(f"Connection with remote {self.hostname} successfully established.")
 
-    def execute(self, command: str, use_stdout: bool):
+    def execute(self, command: List[str], use_stdout: bool):
         if use_stdout:
             stdout = sys.stdout
         else:
@@ -65,8 +66,7 @@ class Remote:
         shell = self.get_ssh_shell()
         with shell:
             re = shell.run(command, stdout=stdout, encoding="utf-8")
-
-            return re.output
+        return re.output
 
     def __eq__(self, other):
         """Assume a remote to be the same if these conditions are met."""
