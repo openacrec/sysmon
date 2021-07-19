@@ -5,7 +5,7 @@ from typing import List
 from flask import render_template
 
 from client import Client
-from endpoints import legacy, v01, deletions
+from endpoints import legacy, v01, deletions, executions
 from sysmon_server import app, DATA_STORAGE
 
 
@@ -71,6 +71,16 @@ def del_endpoint():
     :return: status code
     """
     return deletions.delete_client()
+
+
+@app.route("/api/executions", methods=['POST'])
+def executions_endpoint():
+    """
+    Deletes the current data about the requested client.
+
+    :return: status code
+    """
+    return executions.update_status()
 
 
 if __name__ == '__main__':
