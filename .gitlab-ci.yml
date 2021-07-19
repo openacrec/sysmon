@@ -26,7 +26,7 @@ before_script:
 lint:
   script:
     - pip install flake8
-    - flake8 --exclude=./venv
+    - flake8 --max-line-length=88 --exclude=./venv
 
 interrogate:
   script:
