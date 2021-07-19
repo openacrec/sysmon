@@ -24,7 +24,8 @@ class Remote:
                  password: str = None,
                  key_file: str or Path = None,
                  port: int = 22,
-                 do_connection_test: bool = True):
+                 do_connection_test: bool = True,
+                 create_target: bool = False):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -40,6 +41,7 @@ class Remote:
             # Default of spur for no key is None
             self.key_file = None
         self.port = port
+        self.create_target = create_target
 
         if do_connection_test:
             self.test_connection()

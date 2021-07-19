@@ -27,8 +27,14 @@ class Task:
                    username: str,
                    password: str = None,
                    key_file: str or Path = None,
-                   port: int = 22):
-        re = Remote(hostname, username, password, key_file, port)
+                   port: int = 22,
+                   create_target: bool = False):
+        re = Remote(hostname,
+                    username,
+                    password,
+                    key_file,
+                    port,
+                    create_target=create_target)
         if re not in self.remotes:
             self.remotes.append(re)
 

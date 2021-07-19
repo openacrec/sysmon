@@ -57,7 +57,20 @@ class FileManager:
         path = self.destination.parent
         for remote in self.remotes:
             command = ["stat", str(path)]
-            remote.execute(command, False)
+            try:
+                remote.execute(command, False)
+            except spur.results.RunProcessError:
+                if remote.create_target:
+                    self.create_parent_folders()
+                else:
+                    raise FileNotFoundError(self.destination)
+
+    def create_parent_folders(self):
+        path = self.destination.parent
+        if not path == ".":
+            for remote in self.remotes:
+                command = ["mkdir", "-p", str(path)]
+                remote.execute(command, use_stdout=False)
 
     def copy_to_remote(self):
         """Copy files to the remote using scp."""
