@@ -4,7 +4,7 @@ Define and handle definition of a Task
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 from .file_manager import FileManager
 from .remote import Remote
@@ -79,7 +79,6 @@ class Task:
 
         :return:
         """
-        # TODO: See if you can test if the python version is available
         # TODO: Output format: Should contain machine, timestamp and message
 
         command = [f"python{python_version}", filepath]
@@ -94,3 +93,35 @@ class Task:
                 self.output.append(output.result())
 
         self.status = TaskStatus.FINISHED
+
+    def install_req(self, req: Union[str, Path, List[str]], python_version: float = 3):
+        """
+        Install python requirements for code execution using pip.
+
+        :param req: Accepts a filepath, as string or Path. One module per line.
+        You can also name the package. One as string, multiple as list of strings.
+        :param python_version: The python version to use when calling pip.
+        :return:
+        """
+        # Find out what the input was
+        try:
+            file = Path(req)
+        except TypeError:
+            # If its a list of packages
+            packages = req
+        else:
+            if file.exists():
+                if file.is_file():
+                    with open(file, "r") as in_file:
+                        packages = [package for package in in_file]
+            else:
+                # If the input was a single string, but not a file
+                if type(req) == str:
+                    # Filter out paths, that didn't exist
+                    packages = [req]
+
+        command = [f"python{python_version}", "-m", "pip", "install"]
+        command.extend(packages)
+        with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
+            [executor.submit(remote.execute, command, False)
+             for remote in self.remotes]
