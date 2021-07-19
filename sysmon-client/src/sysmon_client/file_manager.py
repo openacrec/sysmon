@@ -13,20 +13,17 @@ class FileManager:
                  remotes: List[Remote],
                  auto_split: bool = False):
 
+        self.remotes = remotes
+
         self.source = Path(source).expanduser().resolve()
         if not self.source.exists():
             raise FileNotFoundError(self.source)
-
         self.destination = Path(destination)
-        # if not self.destination.exists():
-        #     # Need a way to check on remote
-        #     raise FileNotFoundError(self.destination)
+        self.check_path_on_remotes_exists()
 
-        self.remotes = remotes
         self.auto_split = auto_split
 
         self.splitted: List[List[Path]] = []
-
         self.files = []
         if self.source.is_dir():
             self.get_files(self.source)
@@ -42,6 +39,7 @@ class FileManager:
             self.splitted = [self.files]
 
     def get_files(self, folder: Path):
+        """Collect all files in this folder, including sub folders."""
         for file in folder.iterdir():
             if file.is_file():
                 self.files.append(file)
@@ -49,16 +47,20 @@ class FileManager:
                 self.get_files(file)
 
     def split_files_up(self):
+        """Split all collected files up into equal groups."""
         for i, item in enumerate(self.files):
             if item.is_file():
                 self.splitted[i % len(self.remotes)].append(item)
 
-    def copy_to_remote(self):
-        """
-        Copy files to the remote using scp.
+    def check_path_on_remotes_exists(self):
+        """Check whether a (folder) path is accessible on the remote."""
+        path = self.destination.parent
+        for remote in self.remotes:
+            command = ["stat", str(path)]
+            remote.execute(command, False)
 
-        :return:
-        """
+    def copy_to_remote(self):
+        """Copy files to the remote using scp."""
         with spur.LocalShell() as shell:
             for remote in self.remotes:
                 shell.run([
@@ -66,6 +68,5 @@ class FileManager:
                     self.source,
                     f"{remote.username}@{remote.hostname}:{self.destination}"
                 ])
-        # TODO: Add better error if no directory there
         # TODO: If copying a directory, maybe create it using sth like:
         # $ scp -pr /source/directory user@host:the/target/directory
