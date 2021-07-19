@@ -1,10 +1,11 @@
 """
 Establish remote connection and issue commands over ssh
 """
+import math
 import sys
 from pathlib import Path
 from typing import List
-
+import warnings
 import spur
 
 
@@ -60,11 +61,33 @@ class Remote:
             shell.run(["pwd"])
             print(f"Connection with remote {self.hostname} successfully established.")
 
+    def test_python_version(self, version: float):
+        command = [f"python{version}"]
+        shell = self.get_ssh_shell()
+        with shell:
+            try:
+                shell.run(command, encoding="utf-8")
+            except spur.errors.NoSuchCommandError:
+                fallback = math.floor(version)
+                warnings.warn(f"Could not find python {version}. "
+                              f"Trying broader python{fallback} command.")
+                if fallback == 3.0:
+                    fallback = 3
+                return fallback
+            else:
+                return version
+
     def execute(self, command: List[str], use_stdout: bool):
         if use_stdout:
             stdout = sys.stdout
         else:
             stdout = None
+
+        if command[0].startswith("python"):
+            # Once support moves to 3.9+ only, you can use, which is more readable:
+            # self.test_python_version(float(command[0].removeprefix("python")))
+            version = self.test_python_version(float(command[0][6:]))
+            command[0] = f"python{version}"
         shell = self.get_ssh_shell()
         with shell:
             re = shell.run(command, stdout=stdout, encoding="utf-8")
