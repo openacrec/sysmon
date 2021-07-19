@@ -2,11 +2,9 @@
 Define and handle definition of a Task
 """
 
-import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List
-
-import spur
 
 from .file_manager import FileManager
 from .remote import Remote
@@ -67,36 +65,29 @@ class Task:
     def run(self, filepath: str,
             args: List[str] = None,
             python_version: float = 3,
-            use_stdout: bool = True):
+            use_stdout: bool = False):
         """
         Run a python file on all added remotes.
 
         :param filepath: Remote path of the python file to execute.
         :param args: Additional command line arguments.
         :param python_version: Specify the python version to use.
-        :param use_stdout: If you want to print results to stdout.
+        :param use_stdout: Whether you want to print results to stdout.
 
         :return:
         """
         # TODO: See if you can test if the python version is available
+        # TODO: Output format: Should contain machine, timestamp and message
+
         command = [f"python{python_version}", filepath]
         if args:
             command.extend(args)
 
-        if use_stdout:
-            stdout = sys.stdout
-        else:
-            stdout = None
+        self.status = TaskStatus.RUNNING
+        with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
+            future_output = [executor.submit(remote.execute_python, command, use_stdout)
+                             for remote in self.remotes]
+            for output in as_completed(future_output):
+                self.output.append(output.result())
 
-        for remote in self.remotes:
-            ssh = spur.SshShell(hostname=remote.hostname,
-                                username=remote.username,
-                                password=remote.password,
-                                private_key_file=remote.key_file,
-                                port=remote.port)
-            with ssh:
-                self.status = TaskStatus.RUNNING
-                re = ssh.run(command, stdout=stdout, encoding="utf-8")
-
-                self.output.append(re.output)
         self.status = TaskStatus.FINISHED
