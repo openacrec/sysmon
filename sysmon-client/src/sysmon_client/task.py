@@ -49,10 +49,7 @@ class Task:
         # Will come at a far later stage, first just copying files
         raise NotImplementedError
 
-    def copy(self,
-             source: str,
-             destination: str,
-             auto_split: bool = False):
+    def copy(self, source: str, destination: str, auto_split: bool = False):
         """
         Copy to every specified remote when task is started.
 
