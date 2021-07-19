@@ -1,21 +1,14 @@
 """
 Establish remote connection and issue commands over ssh
 """
+
 import math
 import sys
+import warnings
 from pathlib import Path
 from typing import List
-import warnings
+
 import spur
-
-
-# TODO: Evaluate if i can provide an easier interface for our use cases
-# Otherwise integrate spur into the functions that would call this
-# One immediate pro: Can save this for use throughout, no need to provide
-# login information multiple times (in code)
-
-
-# TODO: Match/Identify with what is what on server side
 
 
 class Remote:
@@ -62,6 +55,12 @@ class Remote:
             print(f"Connection with remote {self.hostname} successfully established.")
 
     def test_python_version(self, version: float):
+        """Test if the desired python version is on the remote."""
+        # Since casting to float makes int x -> x.0
+        if version == 2.0:
+            return 2
+        if version == 3.0:
+            return 3
         command = [f"python{version}"]
         shell = self.get_ssh_shell()
         with shell:
@@ -69,15 +68,20 @@ class Remote:
                 shell.run(command, encoding="utf-8")
             except spur.errors.NoSuchCommandError:
                 fallback = math.floor(version)
-                warnings.warn(f"Could not find python {version}. "
+                warnings.warn(f"Could not find python {version} on {self.hostname}."
                               f"Trying broader python{fallback} command.")
-                if fallback == 3.0:
-                    fallback = 3
                 return fallback
             else:
                 return version
 
     def execute(self, command: List[str], use_stdout: bool):
+        """
+        Execute commands on all registered remotes.
+
+        :param command: The command to execute.
+        :param use_stdout: Whether the output should go to your stdout.
+        :return:
+        """
         if use_stdout:
             stdout = sys.stdout
         else:
@@ -99,7 +103,3 @@ class Remote:
         usernames = self.username == other.username
         ports = self.port == other.port
         return hostnames and usernames and ports
-
-
-if __name__ == '__main__':
-    pass

@@ -81,5 +81,3 @@ class FileManager:
                     self.source,
                     f"{remote.username}@{remote.hostname}:{self.destination}"
                 ])
-        # TODO: If copying a directory, maybe create it using sth like:
-        # $ scp -pr /source/directory user@host:the/target/directory
