@@ -1,21 +1,19 @@
 # System Monitor Server
 
-Server collecting system statistics from [Sysmon-Client](https://gitlab.uni-koblenz.de/mmac/sysmon-docker).  
+Server receiving system statistics from [sysmon-client](../sysmon-client).  
 Running on flask to display our lab's servers workload to decide which one has some capacity left.
 
-## Preview
+## Webpage Preview
 
 ![Sysmon preview](../img/preview.png)
 
 ## Usage
 
-Either as standalone script:
+You can start the server as any other Flask application:
 
 ```bash
+cd sysmon-server/src/sysmon_server
 python -m flask run
 ```
 
-Planned features:
-
-* Display running tasks (defined by client)
-* API to return list of "somewhat" idle servers, that can be worked on
+For more information about the projects plans and direction look at the main [Readme](../README.md).
