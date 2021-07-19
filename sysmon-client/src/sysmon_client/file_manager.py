@@ -54,11 +54,13 @@ class FileManager:
                 self.splitted[i % len(self.remotes)].append(item)
 
     def copy_to_remote(self):
-        # Probably getting Remote object, that will actually handle logic
-        # Need to see, if we need a self.server(s) for that, then no need for
-        # separate number of servers input
+        """
+        Copy files to the remote using scp.
+
+        :return:
+        """
         with spur.LocalShell() as shell:
-            for file_index, remote in enumerate(self.remotes):
+            for remote in self.remotes:
                 shell.run([
                     "scp", "-r",
                     self.source,
@@ -67,5 +69,3 @@ class FileManager:
         # TODO: Add better error if no directory there
         # TODO: If copying a directory, maybe create it using sth like:
         # $ scp -pr /source/directory user@host:the/target/directory
-
-        # TODO: Let scp handle folders, just add -r if its a folder!
