@@ -57,7 +57,7 @@ class Remote:
             shell.run(["pwd"])
             print(f"Connection with remote {self.hostname} successfully established.")
 
-    def execute_python(self, command: str, use_stdout: bool):
+    def execute(self, command: str, use_stdout: bool):
         if use_stdout:
             stdout = sys.stdout
         else:

@@ -85,7 +85,7 @@ class Task:
 
         self.status = TaskStatus.RUNNING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
-            future_output = [executor.submit(remote.execute_python, command, use_stdout)
+            future_output = [executor.submit(remote.execute, command, use_stdout)
                              for remote in self.remotes]
             for output in as_completed(future_output):
                 self.output.append(output.result())
