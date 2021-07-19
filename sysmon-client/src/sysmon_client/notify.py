@@ -1,31 +1,33 @@
-# TODO: Make context manager like, probably as a class instead of generator:
-"""
-with sysmon_task("Working on UTD"):
-    sysmon.loadbalancer.copy(X, Y)
-    sysmon.run(Z)
+from typing import List
 
-which ensures that afterwards the notification is removed again.
-"""
-
-# TODO: Contemplate if a parent class for all makes sense that contains:
-# The servers in use for this task
-# status of task execution (ENUM: RUNNING; FINISHED; FAILED; UNKNOWN)
-# ...
-
-# Use Remote() for that, since this uses most of these classes
+from .task_status import TaskStatus
+from .remote import Remote
+from .submitter import send_task_status
 
 
 class Notify:
-    def __init__(self):
-        self.server = "or servers?"
-        self.severs = []
+    def __init__(self, sysmon_address: str, task_name: str):
+
+        self.sysmon_address = sysmon_address
+        self.task_name = task_name
+        self.task_command = "Nothing yet-"
+        self.remotes: List[Remote] = []
+        self._status = TaskStatus.UNKNOWN
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, new_status: TaskStatus):
+        self._status = new_status
+        self.notify()
 
     def notify(self):
         """Notify sysmon sever that a task is executing on a client."""
-        # Use a string, that gets displayed? Can be funny but will be a risk
-        # if this user input is handled wrong on server side
-        # Could use TaskStatus (from task_status import TaskStatus
-
-        # If this method remains the only one, maybe add it into Remote
-        # or be classless
-        raise NotImplementedError
+        status = {
+            "name": self.task_name,
+            "command": self.task_command,
+            "status": self.status.value
+        }
+        send_task_status(status, self.sysmon_address)

@@ -9,7 +9,7 @@ from typing import List, Union
 from .file_manager import FileManager
 from .remote import Remote
 from .task_status import TaskStatus
-
+from .notify import Notify
 
 # TODO: Contemplate a server module, that handles requesting for free remotes
 # This should return remote name and address? Or not?
@@ -18,36 +18,34 @@ from .task_status import TaskStatus
 class Task:
     def __init__(self, task_name: str):
         self.task_name = task_name
-        self.status = TaskStatus.UNKNOWN
         self.remotes: List[Remote] = []
         self.output = []
+        self.notify: Notify = Notify("", task_name)
+        self.publish: bool = False
 
     def add_remote(self,
-                   hostname: str,
+                   name: str,
+                   url: str,
                    username: str,
                    password: str = None,
                    key_file: str or Path = None,
                    port: int = 22,
+                   do_connection_test: bool = True,
                    create_target: bool = False):
-        re = Remote(hostname,
+        re = Remote(name,
+                    url,
                     username,
                     password,
                     key_file,
                     port,
-                    create_target=create_target)
+                    do_connection_test,
+                    create_target)
         if re not in self.remotes:
             self.remotes.append(re)
 
-    def publish_running_task(self):
-        # Probably separating notify logic to submodule
-        # Probably internal method, called when starting the task
-        raise NotImplementedError
-
-    def execute_on_machines(self, number: int):
-        # Look for (number of) machines that are "free" and save them to
-        # establish remote connection later on
-        # Will come at a far later stage, first just copying files
-        raise NotImplementedError
+    def publish_task(self, sysmon_address: str):
+        self.publish = True
+        self.notify = Notify(sysmon_address, self.task_name)
 
     def copy(self, source: str, destination: str, auto_split: bool = False):
         """
@@ -58,7 +56,9 @@ class Task:
         :param auto_split: Split folders into equal chunks
         :return:
         """
-        self.status = TaskStatus.COPYING
+        self.notify.remotes = self.remotes
+        self.notify.task_command = "Copying files over."
+        self.notify.status = TaskStatus.COPYING
         files = FileManager(source,
                             destination,
                             self.remotes,
@@ -84,15 +84,16 @@ class Task:
         command = [f"python{python_version}", filepath]
         if args:
             command.extend(args)
-
-        self.status = TaskStatus.RUNNING
+        # TODO: Move Notify to remote, so that each remote has its own status
+        self.notify.remotes = self.remotes
+        self.notify.task_command = " ".join(command)
+        self.notify.status = TaskStatus.RUNNING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             future_output = [executor.submit(remote.execute, command, use_stdout)
                              for remote in self.remotes]
             for output in as_completed(future_output):
                 self.output.append(output.result())
-
-        self.status = TaskStatus.FINISHED
+        self.notify.status = TaskStatus.FINISHED
 
     def install_req(self, req: Union[str, Path, List[str]], python_version: float = 3):
         """
@@ -122,6 +123,9 @@ class Task:
 
         command = [f"python{python_version}", "-m", "pip", "install"]
         command.extend(packages)
+        self.notify.remotes = self.remotes
+        self.notify.task_command = " ".join(command[0:6]) + " ..."
+        self.notify.status = TaskStatus.INSTALLING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             [executor.submit(remote.execute, command, False)
              for remote in self.remotes]

@@ -13,14 +13,17 @@ import spur
 
 class Remote:
     def __init__(self,
-                 hostname: str,
+                 name: str,
+                 url: str,
                  username: str,
                  password: str = None,
                  key_file: str or Path = None,
                  port: int = 22,
                  do_connection_test: bool = True,
                  create_target: bool = False):
-        self.hostname = hostname
+        # Name as displayed in sysmon server
+        self.name = name
+        self.url = url
         self.username = username
         self.password = password
         if key_file:
@@ -41,7 +44,7 @@ class Remote:
             self.test_connection()
 
     def get_ssh_shell(self):
-        return spur.SshShell(hostname=self.hostname,
+        return spur.SshShell(hostname=self.url,
                              username=self.username,
                              password=self.password,
                              private_key_file=self.key_file,
@@ -52,7 +55,7 @@ class Remote:
         shell = self.get_ssh_shell()
         with shell:
             shell.run(["pwd"])
-            print(f"Connection with remote {self.hostname} successfully established.")
+            print(f"Connection with remote {self.url} successfully established.")
 
     def test_python_version(self, version: float):
         """Test if the desired python version is on the remote."""
@@ -68,7 +71,7 @@ class Remote:
                 shell.run(command, encoding="utf-8")
             except spur.errors.NoSuchCommandError:
                 fallback = math.floor(version)
-                warnings.warn(f"Could not find python {version} on {self.hostname}."
+                warnings.warn(f"Could not find python {version} on {self.url}."
                               f"Trying broader python{fallback} command.")
                 return fallback
             else:
@@ -99,7 +102,7 @@ class Remote:
 
     def __eq__(self, other):
         """Assume a remote to be the same if these conditions are met."""
-        hostnames = self.hostname == other.hostname
+        hostnames = self.url == other.url
         usernames = self.username == other.username
         ports = self.port == other.port
         return hostnames and usernames and ports

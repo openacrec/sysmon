@@ -79,5 +79,5 @@ class FileManager:
                 shell.run([
                     "scp", "-r",
                     self.source,
-                    f"{remote.username}@{remote.hostname}:{self.destination}"
+                    f"{remote.username}@{remote.url}:{self.destination}"
                 ])
