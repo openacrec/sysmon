@@ -28,6 +28,7 @@ class Notify:
         status = {
             "name": self.task_name,
             "command": self.task_command,
-            "status": self.status.value
+            "status": self.status.value,
+            "clients": [remote.name for remote in self.remotes]
         }
         send_task_status(status, self.sysmon_address)

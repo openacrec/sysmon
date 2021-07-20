@@ -57,7 +57,7 @@ class Task:
         :return:
         """
         self.notify.remotes = self.remotes
-        self.notify.task_command = "Copying files over."
+        self.notify.task_command = f"scp -r {source} {destination}"
         self.notify.status = TaskStatus.COPYING
         files = FileManager(source,
                             destination,

@@ -83,3 +83,7 @@ span#alive_client {
 span#dead_client {
     background-color: #de6262;
 }
+
+.flex-container {
+    display: flex;
+}

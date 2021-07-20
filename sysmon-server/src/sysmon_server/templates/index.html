@@ -18,18 +18,32 @@
 
     {% if client.name in alive %}
 
-        <h2 class="client" id="alive_client">{{ client.name }}  <span class="status_circle" id="alive_client"></span></h2>
+        <h2 class="client" id="alive_client">{{ client.name }} <span
+                class="status_circle" id="alive_client"></span></h2>
 
     {% endif %}
 
     {% if client.name not in alive %}
 
-        <h2 class="client" id="dead_client">{{ client.name }}  <span class="status_circle" id="dead_client"></span></h2>
+        <h2 class="client" id="dead_client">{{ client.name }} <span
+                class="status_circle" id="dead_client"></span></h2>
 
     {% endif %}
 
-    <div class="chart-container">
-        <canvas id="chart_{{ client.name }}"></canvas>
+    <div class="flex-container">
+
+        <div class="chart-container flex-child">
+            <canvas id="chart_{{ client.name }}"></canvas>
+        </div>
+
+        {% if client.name in task.clients %}
+            <div class="task-information flex-child">
+                <h3>{{ task.name }}</h3>
+                <p><b>Command:</b> <i>{{ task.command }}</i></p>
+                <p><b>Status:</b> {{ task.status }}</p>
+            </div>
+        {% endif %}
+
     </div>
 
     <script>
