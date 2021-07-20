@@ -43,7 +43,7 @@ class Task:
         if re not in self.remotes:
             self.remotes.append(re)
 
-    def publish_task(self, sysmon_address: str):
+    def publish_task_on(self, sysmon_address: str):
         self.publish = True
         self.notify = Notify(sysmon_address, self.task_name)
 

@@ -7,7 +7,7 @@ task = Task("Example")
 task.add_remote("asraphael", "asraphael.uni-koblenz.de", "matthias",
                 do_connection_test=False, create_target=True)
 
-task.publish_task("http://127.0.0.1:5000")
+task.publish_task_on("http://127.0.0.1:5000")
 
 task.copy("~/test_script.py", "test_sysmon2/test_script.py")
 task.copy("~/test_script.py", "test_script.py")
