@@ -32,6 +32,23 @@ class Task:
                    port: int = 22,
                    do_connection_test: bool = True,
                    create_target: bool = False):
+        """
+        Create a Remote object, that handles connecting and execution of command
+        on the specified remote.
+
+        :param name: Specify athe name for this remote. Needed to display status
+        on server on the correct spot. Does not affect is status is send.
+        :param url: The address to connect via ssh to the remote.
+        :param username: The username to login to the remote.
+        :param password: The password used to login to the remote.
+        :param key_file: The path to the keyfile to authenticate if you prefer it.
+        :param port: Specify a different port to use for a ssh connection (default: 22)
+        :param do_connection_test: Whether to try connection once when the Remote
+        object is created.
+        :param create_target: Whether or not to create the first folder on the remote
+        if it does not exist
+        :return:
+        """
         re = Remote(name,
                     url,
                     username,
@@ -44,6 +61,13 @@ class Task:
             self.remotes.append(re)
 
     def publish_task_on(self, sysmon_address: str):
+        """
+        If called the sysmon tries to send information about the tasks status to the
+        sysmon server.
+
+        :param sysmon_address: The address of the sysmon server.
+        :return:
+        """
         self.publish = True
         self.notify = Notify(sysmon_address, self.task_name)
 
