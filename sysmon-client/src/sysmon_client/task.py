@@ -11,9 +11,6 @@ from .remote import Remote
 from .task_status import TaskStatus
 from .notify import Notify
 
-# TODO: Contemplate a server module, that handles requesting for free remotes
-# This should return remote name and address? Or not?
-
 
 class Task:
     def __init__(self, task_name: str):
@@ -145,6 +142,8 @@ class Task:
                     # Filter out paths, that didn't exist
                     packages = [req]
 
+        # The packages always get input as a list, ordered, in case a file was given,
+        # the order is from top to bottom
         command = [f"python{python_version}", "-m", "pip", "install"]
         command.extend(packages)
         self.notify.remotes = self.remotes
