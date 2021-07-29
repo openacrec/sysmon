@@ -44,6 +44,7 @@ class Remote:
             self.test_connection()
 
     def get_ssh_shell(self):
+        """Return a ssh shell to use for remote execution of a command."""
         return spur.SshShell(hostname=self.url,
                              username=self.username,
                              password=self.password,
