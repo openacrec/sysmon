@@ -15,7 +15,7 @@ def check_address(url: str) -> str:
 # Seperated from continues_submit() for testing purposes.
 def submit(json_data, full_address):
     """
-    Send current system statistics to provided endpoint.
+    General submission function to send json data to a remote endpoint.
 
     :param json_data: Current system statistics
     :param full_address: address of the server with attached endpoint
