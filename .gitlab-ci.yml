@@ -31,7 +31,8 @@ lint:
 interrogate:
   script:
     - pip install interrogate
-    - interrogate .
+    - interrogate sysmon-client/
+    - interrogate sysmon-server/
   artifacts:
     paths:
       - interrogate_badge.svg
