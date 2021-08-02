@@ -15,7 +15,7 @@ class Client:
         """
         Initialize the Client class.
 
-        :param name: The name of this client, that will be displayed on the server.
+        :param name: Name of this client, that will be displayed on the server.
         :param server_address: Address of the sysmon_server.
         :param report_interval: Number of seconds between sending a report.
         """
