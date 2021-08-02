@@ -7,6 +7,8 @@ from sysmon_server.client import Client
 
 
 def to_new_json_format(client_json: Dict):
+    """Convert the legacy json format to the new, so that the current Client class can
+    get it as input."""
     json = {
         "name": client_json["machine_name"],
         "endpoint_version": "legacy",
