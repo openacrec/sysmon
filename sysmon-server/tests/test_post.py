@@ -2,6 +2,7 @@ from requests import post
 
 
 def send_test(machine_name, time, cpu_p, mem_p, gpu_p):
+    """Test sending (old) formatted json to sysmon server."""
     json = {
         "machine_name": machine_name,
         "interval": 60,
