@@ -5,6 +5,13 @@ from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
 
+def check_address(url: str) -> str:
+    """For now, remove trailing / if there is one."""
+    if url.endswith("/"):
+        return url[0:-1]
+    return url
+
+
 # Seperated from continues_submit() for testing purposes.
 def submit(json_data, full_address):
     """
@@ -48,6 +55,7 @@ def continues_submit(system_stats, server_address):
     :param server_address: address of the server collecting system stats
     :return:
     """
+    server_address = check_address(server_address)
     try:
         submit(system_stats, f"{server_address}/api/v01")
     except requests.exceptions.RequestException:
@@ -67,5 +75,18 @@ def request_deletion(system_stats, server_address):
     :param server_address: address of the server collecting system stats
     :return:
     """
+    server_address = check_address(server_address)
     to_delete = {"name": system_stats["name"]}
     submit(to_delete, f"{server_address}/api/del")
+
+
+def send_task_status(task_status, server_address):
+    """
+    Send the current status of task execution to the executions endpoint.
+
+    :param task_status: JSON containing information about current task status.
+    :param server_address: address of the server collecting this status
+    :return:
+    """
+    server_address = check_address(server_address)
+    submit(task_status, f"{server_address}/api/executions")

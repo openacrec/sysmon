@@ -4,12 +4,13 @@ from typing import List
 
 from flask import render_template
 
-from client import Client
-from endpoints import legacy, v01, deletions
+from endpoints import legacy, v01, deletions, executions
 from sysmon_server import app, DATA_STORAGE
+from .client import Client
+from .task_status import TaskStatus
 
 
-def collect_clients() -> List:
+def collect_clients() -> List[Client]:
     """
     Return a list with all clients loaded as a instance of the client class.
 
@@ -18,7 +19,8 @@ def collect_clients() -> List:
     clients = []
     files = Path(f"{DATA_STORAGE}")
     for file in files.iterdir():
-        if file.is_file():
+        # TODO: Add a prefix for clients? and all else to differentiate
+        if file.is_file() and not file.name == "execution_status.json":
             clients.append(Client({"name": file.stem}, update=False))
     return clients
 
@@ -33,9 +35,12 @@ def sysmon():
     clients = collect_clients()
     # Returns clients that are still alive AND deletes long-gone clients
     alive = [client.name for client in clients if client.updated_in_time()]
+    # TODO: What about multiple different stati? E.g. from different sources
+    task = TaskStatus()
     return render_template("index.html",
                            clients=clients,
-                           alive=alive, )
+                           alive=alive,
+                           task=task)
 
 
 def check_compatible_endpoint_version():
@@ -71,6 +76,16 @@ def del_endpoint():
     :return: status code
     """
     return deletions.delete_client()
+
+
+@app.route("/api/executions", methods=['POST'])
+def executions_endpoint():
+    """
+    Deletes the current data about the requested client.
+
+    :return: status code
+    """
+    return executions.update_status()
 
 
 if __name__ == '__main__':
