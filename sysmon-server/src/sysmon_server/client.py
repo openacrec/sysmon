@@ -52,6 +52,12 @@ class Client:
                 self.update_all(client_json)
 
     def update_all(self, json_data):
+        """
+        Helper function to update current properties with the new data.
+
+        :param json_data: New usage data, formatted as json, of this client.
+        :return:
+        """
         self.interval = json_data["interval"]
         self.endpoint_version = json_data["endpoint_version"]
         self.address = json_data["address"]
@@ -137,19 +143,15 @@ class Client:
         tmp.append(new_gpu)
         self.json["gpu"] = tmp[-NR_OF_ITEMS:]
 
-    @staticmethod
-    def update_statistics(client, json_data):
-        print("working in update")
-        print(json_data)
-
-        return client
-
     def save_file(self):
+        """Save the client as a json file for later use."""
         filename = secure_filename(self.name)
         with open(f"{DATA_STORAGE}/{filename}.json", "w+") as out:
             json.dump(self.json, out)
 
     def updated_in_time(self) -> bool:
+        """Check if the client was updated in time, according to it's planned
+        interval."""
         current_time = time.time()
         # Give 10 seconds as extra delay
         if current_time > self.timestamp + self.interval + 10:
@@ -162,6 +164,7 @@ class Client:
             return True
 
     def delete_file(self):
+        """Delete the client's data file."""
         filename = secure_filename(self.name)
         try:
             pathlib.Path(f"{DATA_STORAGE}/{filename}.json").unlink()
