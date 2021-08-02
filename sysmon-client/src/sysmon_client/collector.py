@@ -5,7 +5,15 @@ import psutil
 
 
 class Collector:
-    def __init__(self, name, interval):
+    """Helper class that bundles different methods to collect current usage data."""
+
+    def __init__(self, name: str, interval: int):
+        """
+        Initialize the Collector class.
+
+        :param name: Name of this client. Will be shown as it's name on server.
+        :param interval: Interval (in sec) between status updates.
+        """
         self.json = {
             "name": name,
             "interval": interval,

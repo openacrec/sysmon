@@ -1,19 +1,23 @@
-"""
-Define and handle definition of a Task
-"""
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List, Union
 
 from .file_manager import FileManager
+from .notify import Notify
 from .remote import Remote
 from .task_status import TaskStatus
-from .notify import Notify
 
 
 class Task:
+    """Set up and handle new tasks that shall be executed on (multiple) remotes."""
+
     def __init__(self, task_name: str):
+        """
+        Initialize the Task class.
+
+        :param task_name: Name of this tasks. Will be displayed (if chosen so) on the
+        corresponding server.
+        """
         self.task_name = task_name
         self.remotes: List[Remote] = []
         self.output = []
@@ -101,6 +105,7 @@ class Task:
         :return:
         """
         # TODO: Output format: Should contain machine, timestamp and message
+        # How can i change the standard print output individually?
 
         command = [f"python{python_version}", filepath]
         if args:

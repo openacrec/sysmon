@@ -44,6 +44,7 @@ def sysmon():
 
 
 def check_compatible_endpoint_version():
+    """Check if the used endpoint is compatible with this version of sysmon."""
     raise NotImplementedError
 
 

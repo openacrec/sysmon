@@ -4,7 +4,10 @@ from sysmon_server import DATA_STORAGE
 
 
 class TaskStatus:
+    """Helper class that handles task status coming from client's remote execution."""
+
     def __init__(self):
+        """Initialize the TaskStatus class by reading the status file."""
         with open(f"{DATA_STORAGE}/execution_status.json", "r") as in_file:
             self.json = load(in_file)
 

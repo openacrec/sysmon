@@ -1,7 +1,3 @@
-"""
-Establish remote connection and issue commands over ssh
-"""
-
 import math
 import sys
 import warnings
@@ -12,6 +8,8 @@ import spur
 
 
 class Remote:
+    """Establish remote connection and issue commands over ssh."""
+
     def __init__(self,
                  name: str,
                  url: str,
@@ -21,6 +19,21 @@ class Remote:
                  port: int = 22,
                  do_connection_test: bool = True,
                  create_target: bool = False):
+        """
+        Initialize the Remote class.
+
+        :param name: Name of this remote (should be as displayed be sysmon_server for
+        identification).
+        :param url: URL of this remote server (as you would use for ssh).
+        :param username: Username to log into with on this server.
+        :param password: Password for this user (optional).
+        :param key_file: Path to a key_file for this user (optional).
+        :param port: Change the used port (optional).
+        :param do_connection_test: Whether or not to test the connection immediately.
+        :param create_target: Whether or not the target folder should be created if its
+        missing.
+        """
+
         # Name as displayed in sysmon server
         self.name = name
         self.url = url
@@ -101,7 +114,7 @@ class Remote:
             re = shell.run(command, stdout=stdout, encoding="utf-8")
         return re.output
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Remote"):
         """Assume a remote to be the same if these conditions are met."""
         hostnames = self.url == other.url
         usernames = self.username == other.username

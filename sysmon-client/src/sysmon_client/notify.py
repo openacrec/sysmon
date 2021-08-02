@@ -6,7 +6,15 @@ from .submitter import send_task_status
 
 
 class Notify:
+    """Handles reaction on status changes and reports them to the server."""
+
     def __init__(self, sysmon_address: str, task_name: str):
+        """
+        Initialize the Notify class.
+
+        :param sysmon_address: Server address of the used sysmon_server instance.
+        :param task_name: Name of the task this report talks about.
+        """
 
         self.sysmon_address = sysmon_address
         self.task_name = task_name

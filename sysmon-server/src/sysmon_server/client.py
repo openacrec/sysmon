@@ -2,7 +2,7 @@ import json
 import pathlib
 import time
 from json import load
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from werkzeug.utils import secure_filename
 
@@ -26,7 +26,7 @@ NR_OF_ITEMS = 200
 class Client:
     """Data class that wraps Client information."""
 
-    def __init__(self, client_json: Dict, update: bool = True):
+    def __init__(self, client_json: Dict[str, Any], update: bool = True):
         """
         Create a new client object.
 
@@ -51,7 +51,13 @@ class Client:
                 # If there is new data and it's not a limited client creation
                 self.update_all(client_json)
 
-    def update_all(self, json_data):
+    def update_all(self, json_data: Dict[str, Any]):
+        """
+        Helper function to update current properties with the new data.
+
+        :param json_data: New usage data, formatted as json, of this client.
+        :return:
+        """
         self.interval = json_data["interval"]
         self.endpoint_version = json_data["endpoint_version"]
         self.address = json_data["address"]
@@ -70,7 +76,7 @@ class Client:
         return self.json["interval"]
 
     @interval.setter
-    def interval(self, new_interval):
+    def interval(self, new_interval: int):
         self.json["interval"] = new_interval
 
     @property
@@ -86,7 +92,7 @@ class Client:
         return self.json["endpoint_version"]
 
     @endpoint_version.setter
-    def endpoint_version(self, new_endpoint_version):
+    def endpoint_version(self, new_endpoint_version: str):
         self.json["endpoint_version"] = new_endpoint_version
 
     @property
@@ -94,7 +100,7 @@ class Client:
         return self.json["time"]
 
     @time.setter
-    def time(self, new_time):
+    def time(self, new_time: str):
         tmp = self.time
         tmp.append(new_time)
         self.json["time"] = tmp[-NR_OF_ITEMS:]
@@ -104,11 +110,11 @@ class Client:
         return self.json["timestamp"]
 
     @timestamp.setter
-    def timestamp(self, new_timestamp):
+    def timestamp(self, new_timestamp: float):
         self.json["timestamp"] = new_timestamp
 
     @property
-    def cpu(self) -> List:
+    def cpu(self) -> List[float]:
         return self.json["cpu"]
 
     @cpu.setter
@@ -118,7 +124,7 @@ class Client:
         self.json["cpu"] = tmp[-NR_OF_ITEMS:]
 
     @property
-    def memory(self) -> List:
+    def memory(self) -> List[float]:
         return self.json["memory"]
 
     @memory.setter
@@ -128,7 +134,7 @@ class Client:
         self.json["memory"] = tmp[-NR_OF_ITEMS:]
 
     @property
-    def gpu(self) -> List:
+    def gpu(self) -> List[float]:
         return self.json["gpu"]
 
     @gpu.setter
@@ -137,19 +143,15 @@ class Client:
         tmp.append(new_gpu)
         self.json["gpu"] = tmp[-NR_OF_ITEMS:]
 
-    @staticmethod
-    def update_statistics(client, json_data):
-        print("working in update")
-        print(json_data)
-
-        return client
-
     def save_file(self):
+        """Save the client as a json file for later use."""
         filename = secure_filename(self.name)
         with open(f"{DATA_STORAGE}/{filename}.json", "w+") as out:
             json.dump(self.json, out)
 
     def updated_in_time(self) -> bool:
+        """Check if the client was updated in time, according to it's planned
+        interval."""
         current_time = time.time()
         # Give 10 seconds as extra delay
         if current_time > self.timestamp + self.interval + 10:
@@ -162,6 +164,7 @@ class Client:
             return True
 
     def delete_file(self):
+        """Delete the client's data file."""
         filename = secure_filename(self.name)
         try:
             pathlib.Path(f"{DATA_STORAGE}/{filename}.json").unlink()

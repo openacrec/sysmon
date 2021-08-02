@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Dict, Any
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -13,9 +14,9 @@ def check_address(url: str) -> str:
 
 
 # Seperated from continues_submit() for testing purposes.
-def submit(json_data, full_address):
+def submit(json_data: Dict[str, Any], full_address: str):
     """
-    Send current system statistics to provided endpoint.
+    General submission function to send json data to a remote endpoint.
 
     :param json_data: Current system statistics
     :param full_address: address of the server with attached endpoint
@@ -46,7 +47,7 @@ def submit(json_data, full_address):
         session.post(full_address, json=json_data)
 
 
-def continues_submit(system_stats, server_address):
+def continues_submit(system_stats: Dict[str, Any], server_address: str):
     """
     Execute the submit function in a try except block in order for it
     to always continue operation.
@@ -67,7 +68,7 @@ def continues_submit(system_stats, server_address):
               f"Updated system statistics on {system_stats['name']}.")
 
 
-def request_deletion(system_stats, server_address):
+def request_deletion(system_stats: Dict[str, Any], server_address: str):
     """
     Send this machine's name to the deletion endpoint of the sysmon server.
 
@@ -80,7 +81,7 @@ def request_deletion(system_stats, server_address):
     submit(to_delete, f"{server_address}/api/del")
 
 
-def send_task_status(task_status, server_address):
+def send_task_status(task_status: Dict[str, Any], server_address: str):
     """
     Send the current status of task execution to the executions endpoint.
 

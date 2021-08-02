@@ -1,6 +1,3 @@
-"""
-Module of main functions that make up sysmon
-"""
 import time
 
 from .collector import Collector
@@ -8,10 +5,13 @@ from .submitter import continues_submit
 
 
 class Client:
-    def __init__(self, name, server_address, report_interval: int = 60):
-        """
+    """Defines a client that reports usage statistics to a specified server."""
 
-        :param name: The name of this client, that will be displayed on the server.
+    def __init__(self, name: str, server_address: str, report_interval: int = 60):
+        """
+        Initialize the Client class.
+
+        :param name: Name of this client, that will be displayed on the server.
         :param server_address: Address of the sysmon_server.
         :param report_interval: Number of seconds between sending a report.
         """
