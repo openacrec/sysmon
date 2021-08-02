@@ -7,11 +7,22 @@ from .remote import Remote
 
 
 class FileManager:
+    """Helper class that handles file path handling as well as splitting of data."""
+
     def __init__(self,
                  source: str,
                  destination: str,
                  remotes: List[Remote],
                  auto_split: bool = False):
+        """
+        Initialize the FileManager class.
+
+        :param source: Source path of the file/folder to copy.
+        :param destination: Path of the destination on the remote.
+        :param remotes: List of the remotes where this will be copied to.
+        :param auto_split: Whether this is a folder which content shall be split
+        between the remotes.
+        """
 
         self.remotes = remotes
 
@@ -66,6 +77,8 @@ class FileManager:
                     raise FileNotFoundError(self.destination)
 
     def create_parent_folders(self):
+        """Calls for the creation of the destinations parent folder on all remotes.
+        Subfolders are created anyways by the used copy function."""
         path = self.destination.parent
         if not path == ".":
             for remote in self.remotes:
