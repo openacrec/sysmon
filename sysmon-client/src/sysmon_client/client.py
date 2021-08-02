@@ -7,7 +7,7 @@ from .submitter import continues_submit
 class Client:
     """Defines a client that reports usage statistics to a specified server."""
 
-    def __init__(self, name, server_address, report_interval: int = 60):
+    def __init__(self, name: str, server_address: str, report_interval: int = 60):
         """
         Initialize the Client class.
 

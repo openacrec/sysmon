@@ -7,7 +7,7 @@ import psutil
 class Collector:
     """Helper class that bundles different methods to collect current usage data."""
 
-    def __init__(self, name, interval):
+    def __init__(self, name: str, interval: int):
         """
         Initialize the Collector class.
 

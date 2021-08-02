@@ -114,7 +114,7 @@ class Remote:
             re = shell.run(command, stdout=stdout, encoding="utf-8")
         return re.output
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Remote"):
         """Assume a remote to be the same if these conditions are met."""
         hostnames = self.url == other.url
         usernames = self.username == other.username
