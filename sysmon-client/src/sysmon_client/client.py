@@ -1,7 +1,3 @@
-"""
-Module of main functions that make up sysmon
-"""
-
 import time
 
 from .collector import Collector
