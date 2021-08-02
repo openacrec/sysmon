@@ -4,10 +4,10 @@ from typing import List
 
 from flask import render_template
 
-from client import Client
 from endpoints import legacy, v01, deletions, executions
 from sysmon_server import app, DATA_STORAGE
-from task_status import TaskStatus
+from .client import Client
+from .task_status import TaskStatus
 
 
 def collect_clients() -> List[Client]:

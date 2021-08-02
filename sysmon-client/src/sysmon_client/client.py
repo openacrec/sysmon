@@ -3,8 +3,8 @@ Module of main functions that make up sysmon
 """
 import time
 
-from collector import Collector
-import submitter
+from .collector import Collector
+from .submitter import continues_submit
 
 
 class Client:
@@ -23,7 +23,7 @@ class Client:
         """Report's continuously the status of this machine to the sysmon_server."""
         while True:
             system_stats = Collector(self.name, self.report_interval)
-            submitter.continues_submit(system_stats.json, self.server_address)
+            continues_submit(system_stats.json, self.server_address)
             time.sleep(self.report_interval)
 
 
