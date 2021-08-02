@@ -1,12 +1,12 @@
 from time import strptime, mktime
-from typing import Dict
+from typing import Dict, Any, Union
 
 from flask import request
 
 from sysmon_server.client import Client
 
 
-def to_new_json_format(client_json: Dict):
+def to_new_json_format(client_json: Dict[str, Any]):
     """Convert the legacy json format to the new, so that the current Client class can
     get it as input."""
     json = {
@@ -35,7 +35,7 @@ def to_new_json_format(client_json: Dict):
     return json
 
 
-def str_to_unix(time_string, time_format):
+def str_to_unix(time_string: str, time_format: str) -> Union[float, None]:
     """
     Tries to convert the time (given as string) to time epoch.
 
@@ -53,7 +53,7 @@ def str_to_unix(time_string, time_format):
     return time
 
 
-def update_clients_and_times(req, names_json):
+def update_clients_and_times(req: Dict[str, Any], names_json: Dict[str, Any]):
     """
     New clients should go straight into the names list,
     while old clients get there "last seen" time updated.
