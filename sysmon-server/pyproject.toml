@@ -9,6 +9,7 @@ build-backend = "setuptools.build_meta"
 fail-under = 95
 ignore-init-method = true
 ignore-init-module = true
+ignore-module = true
 ignore-property-decorators = true
 exclude = ["docs", "build", "dist", ".tox"]
 verbose = 1
