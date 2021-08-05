@@ -27,6 +27,12 @@ class Client:
             time.sleep(self.report_interval)
 
 
+def entry_point_helper():
+    name = input("How do you want to call this client? ")
+    server_address = input("Which address does the sysmon_server have? ")
+    return Client(name, server_address).start_reporting()
+
+
 if __name__ == "__main__":
     Client("Test", "http://127.0.0.1:5000", 5).start_reporting()
     # submitter.request_deletion({"name": "NoGpu"}, "http://127.0.0.1:5000")
