@@ -28,6 +28,8 @@ class Client:
 
 
 def entry_point_helper():
+    """Helper function to query necessary information when the entrypoint
+    "sysmon-report" is used."""
     name = input("How do you want to call this client? ")
     server_address = input("Which address does the sysmon_server have? ")
     return Client(name, server_address).start_reporting()
