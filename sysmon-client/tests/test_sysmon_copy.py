@@ -20,6 +20,9 @@ task.copy("~/test_script.py", "test_script.py")
 task.copy("~/test_script.py", "test_sysmon2/test_script.py")
 task.copy("~/testdata", "test_sysmon2/")
 
+# Test changing default python version to use
+task.use_python_version(3.7)
+
 # Test both supported methods to install requirements:
 # Via a requirements file and via a list of packages
 task.install_req("copy_test.txt")
