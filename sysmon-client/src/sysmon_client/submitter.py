@@ -9,7 +9,7 @@ from urllib3 import Retry
 def check_address(url: str) -> str:
     """For now, remove trailing / if there is one."""
     if url.endswith("/"):
-        return url[0:-1]
+        url = url[0:-1]
     return url
 
 
