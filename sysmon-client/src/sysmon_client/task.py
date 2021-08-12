@@ -108,9 +108,9 @@ class Task:
         # TODO: Output format: Should contain machine, timestamp and message
         # How can i change the standard print output individually?
 
-        version = python_version
-        if self.python_version != 3:
-            version = self.python_version
+        version = self.python_version
+        if python_version != 3:
+            version = python_version
 
         command = [f"python{version}", filepath]
         if args:
@@ -152,9 +152,9 @@ class Task:
                     # Filter out paths, that didn't exist
                     packages = [req]
 
-        version = python_version
-        if self.python_version != 3:
-            version = self.python_version
+        version = self.python_version
+        if python_version != 3:
+            version = python_version
 
         # The packages always get input as a list, ordered, in case a file was given,
         # the order is from top to bottom
