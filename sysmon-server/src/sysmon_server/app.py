@@ -82,7 +82,7 @@ def del_endpoint():
 @app.route("/api/executions", methods=['POST'])
 def executions_endpoint():
     """
-    Deletes the current data about the requested client.
+    Update the status of the current execution.
 
     :return: status code
     """
