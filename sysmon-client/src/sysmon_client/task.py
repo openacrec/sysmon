@@ -23,6 +23,7 @@ class Task:
         self.output = []
         self.notify: Notify = Notify("", task_name)
         self.publish: bool = False
+        self.python_version = 3
 
     def add_remote(self,
                    name: str,
@@ -107,7 +108,11 @@ class Task:
         # TODO: Output format: Should contain machine, timestamp and message
         # How can i change the standard print output individually?
 
-        command = [f"python{python_version}", filepath]
+        version = python_version
+        if self.python_version != 3:
+            version = self.python_version
+
+        command = [f"python{version}", filepath]
         if args:
             command.extend(args)
         # TODO: Move Notify to remote, so that each remote has its own status
@@ -147,9 +152,13 @@ class Task:
                     # Filter out paths, that didn't exist
                     packages = [req]
 
+        version = python_version
+        if self.python_version != 3:
+            version = self.python_version
+
         # The packages always get input as a list, ordered, in case a file was given,
         # the order is from top to bottom
-        command = [f"python{python_version}", "-m", "pip", "install"]
+        command = [f"python{version}", "-m", "pip", "install"]
         command.extend(packages)
         self.notify.remotes = self.remotes
         self.notify.task_command = " ".join(command[0:6]) + " ..."
@@ -157,3 +166,12 @@ class Task:
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             [executor.submit(remote.execute, command, False)
              for remote in self.remotes]
+
+    def use_python_version(self, version: Union[int, float]):
+        """
+        Specify which python version is used for the task.
+
+        :param version: Python version (e.g. 3.8)
+        :return:
+        """
+        self.python_version = version
