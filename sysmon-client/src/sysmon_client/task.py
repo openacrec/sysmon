@@ -82,9 +82,10 @@ class Task:
         :param auto_split: Split folders into equal chunks
         :return:
         """
-        self.notify.remotes = self.remotes
-        self.notify.task_command = f"scp -r {source} {destination}"
-        self.notify.status = TaskStatus.COPYING
+        if self.publish:
+            self.notify.remotes = self.remotes
+            self.notify.task_command = f"scp -r {source} {destination}"
+            self.notify.status = TaskStatus.COPYING
         files = FileManager(source,
                             destination,
                             self.remotes,
@@ -115,16 +116,19 @@ class Task:
         command = [f"python{version}", filepath]
         if args:
             command.extend(args)
+
         # TODO: Move Notify to remote, so that each remote has its own status
-        self.notify.remotes = self.remotes
-        self.notify.task_command = " ".join(command)
-        self.notify.status = TaskStatus.RUNNING
+        if self.publish:
+            self.notify.remotes = self.remotes
+            self.notify.task_command = " ".join(command)
+            self.notify.status = TaskStatus.RUNNING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             future_output = [executor.submit(remote.execute, command, use_stdout)
                              for remote in self.remotes]
             for output in as_completed(future_output):
                 self.output.append(output.result())
-        self.notify.status = TaskStatus.FINISHED
+        if self.publish:
+            self.notify.status = TaskStatus.FINISHED
 
     def install_req(self, req: Union[str, Path, List[str]], python_version: float = 3):
         """
@@ -160,9 +164,11 @@ class Task:
         # the order is from top to bottom
         command = [f"python{version}", "-m", "pip", "install"]
         command.extend(packages)
-        self.notify.remotes = self.remotes
-        self.notify.task_command = " ".join(command[0:6]) + " ..."
-        self.notify.status = TaskStatus.INSTALLING
+
+        if self.publish:
+            self.notify.remotes = self.remotes
+            self.notify.task_command = " ".join(command[0:6]) + " ..."
+            self.notify.status = TaskStatus.INSTALLING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             [executor.submit(remote.execute, command, False)
              for remote in self.remotes]
