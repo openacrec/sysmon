@@ -24,6 +24,8 @@ class Task:
         self.notify: Notify = Notify("", task_name)
         self.publish: bool = False
         self.python_version = 3
+        self._use_venv = False
+        self._venv_path = ""
 
     def add_remote(self,
                    name: str,
@@ -117,6 +119,11 @@ class Task:
         if args:
             command.extend(args)
 
+        if self._use_venv:
+            venv_command = ["source", f"{self._venv_path}/bin/activate", "&&"]
+            venv_command.extend(command)
+            command = venv_command
+
         # TODO: Move Notify to remote, so that each remote has its own status
         if self.publish:
             self.notify.remotes = self.remotes
@@ -165,6 +172,12 @@ class Task:
         command = [f"python{version}", "-m", "pip", "install"]
         command.extend(packages)
 
+        # TODO: Make this a method call?
+        if self._use_venv:
+            venv_command = ["source", f"{self._venv_path}/bin/activate", "&&"]
+            venv_command.extend(command)
+            command = venv_command
+
         if self.publish:
             self.notify.remotes = self.remotes
             self.notify.task_command = " ".join(command[0:6]) + " ..."
@@ -181,3 +194,33 @@ class Task:
         :return:
         """
         self.python_version = version
+
+    def use_venv(self, venv_path: str):
+        """
+        Use an already existing virtual environment.
+
+        :param venv_path: Path on the remotes to the venv.
+        :return:
+        """
+        self._use_venv = True
+        self._venv_path = venv_path
+
+    def create_venv(self, venv_path: str, python_version: float = 3):
+        """
+        Create (and than use) a virtual environment at the given path.
+
+        :param venv_path: Path to create the venv.
+        :param python_version: Python version to use.
+        :return:
+        """
+        self.use_venv(venv_path)
+
+        version = self.python_version
+        if python_version != 3:
+            version = python_version
+
+        command = [f"python{version}", "-m", "venv", venv_path]
+        with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
+            [executor.submit(remote.execute, command, True)
+             for remote in self.remotes]
+
