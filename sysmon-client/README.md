@@ -15,4 +15,18 @@ import sysmon_client.client as client
 client.start_reporting("Test", "http://server_adress:5000")
 ```
 
+or call the pip script
+
+```shell
+sysmon-report
+```
+
+or run the Dockerfile in interactive mode (-it):
+
+```shell
+cd sysmon-docker/sysmon-client
+docker build -t sysmon .
+docker run -it --name sysmon sysmon
+```
+
 For more information about the projects plans and direction look at the main [Readme](../README.md).
