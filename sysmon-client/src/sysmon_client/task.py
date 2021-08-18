@@ -24,6 +24,8 @@ class Task:
         self.notify: Notify = Notify("", task_name)
         self.publish: bool = False
         self.python_version = 3
+        self._use_venv = False
+        self._venv_path = ""
 
     def add_remote(self,
                    name: str,
@@ -82,9 +84,10 @@ class Task:
         :param auto_split: Split folders into equal chunks
         :return:
         """
-        self.notify.remotes = self.remotes
-        self.notify.task_command = f"scp -r {source} {destination}"
-        self.notify.status = TaskStatus.COPYING
+        if self.publish:
+            self.notify.remotes = self.remotes
+            self.notify.task_command = f"scp -r {source} {destination}"
+            self.notify.status = TaskStatus.COPYING
         files = FileManager(source,
                             destination,
                             self.remotes,
@@ -115,16 +118,24 @@ class Task:
         command = [f"python{version}", filepath]
         if args:
             command.extend(args)
+
+        if self._use_venv:
+            venv_command = ["source", f"{self._venv_path}/bin/activate", "&&"]
+            venv_command.extend(command)
+            command = venv_command
+
         # TODO: Move Notify to remote, so that each remote has its own status
-        self.notify.remotes = self.remotes
-        self.notify.task_command = " ".join(command)
-        self.notify.status = TaskStatus.RUNNING
+        if self.publish:
+            self.notify.remotes = self.remotes
+            self.notify.task_command = " ".join(command)
+            self.notify.status = TaskStatus.RUNNING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             future_output = [executor.submit(remote.execute, command, use_stdout)
                              for remote in self.remotes]
             for output in as_completed(future_output):
                 self.output.append(output.result())
-        self.notify.status = TaskStatus.FINISHED
+        if self.publish:
+            self.notify.status = TaskStatus.FINISHED
 
     def install_req(self, req: Union[str, Path, List[str]], python_version: float = 3):
         """
@@ -160,9 +171,17 @@ class Task:
         # the order is from top to bottom
         command = [f"python{version}", "-m", "pip", "install"]
         command.extend(packages)
-        self.notify.remotes = self.remotes
-        self.notify.task_command = " ".join(command[0:6]) + " ..."
-        self.notify.status = TaskStatus.INSTALLING
+
+        # TODO: Make this a method call?
+        if self._use_venv:
+            venv_command = ["source", f"{self._venv_path}/bin/activate", "&&"]
+            venv_command.extend(command)
+            command = venv_command
+
+        if self.publish:
+            self.notify.remotes = self.remotes
+            self.notify.task_command = " ".join(command[0:6]) + " ..."
+            self.notify.status = TaskStatus.INSTALLING
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             [executor.submit(remote.execute, command, False)
              for remote in self.remotes]
@@ -175,3 +194,32 @@ class Task:
         :return:
         """
         self.python_version = version
+
+    def use_venv(self, venv_path: str):
+        """
+        Use an already existing virtual environment.
+
+        :param venv_path: Path on the remotes to the venv.
+        :return:
+        """
+        self._use_venv = True
+        self._venv_path = venv_path
+
+    def create_venv(self, venv_path: str, python_version: float = 3):
+        """
+        Create (and than use) a virtual environment at the given path.
+
+        :param venv_path: Path to create the venv.
+        :param python_version: Python version to use.
+        :return:
+        """
+        self.use_venv(venv_path)
+
+        version = self.python_version
+        if python_version != 3:
+            version = python_version
+
+        command = [f"python{version}", "-m", "venv", venv_path]
+        with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
+            [executor.submit(remote.execute, command, True)
+             for remote in self.remotes]
