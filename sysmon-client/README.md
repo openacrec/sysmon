@@ -10,9 +10,9 @@ We use it in our lab to monitor the workload of our machine learning servers.
 Use from your own script by importing sysmon_client:
 
 ```python
-import sysmon_client.client as client
+from sysmon_client.client import Client
 
-client.start_reporting("Test", "http://server_adress:5000")
+Client("Test", "http://server_adress:5000").start_reporting()
 ```
 
 or call the pip script
