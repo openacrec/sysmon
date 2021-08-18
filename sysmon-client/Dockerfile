@@ -12,10 +12,11 @@ WORKDIR /home/ami
 COPY requirements.txt ./
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-COPY src/sysmon_client/main.py ./
-COPY src/sysmon_client/config ./config
+COPY . ./sysmon/
 
 RUN chown ami:ami -R /home/ami/
-USER ami
 
-CMD ["python3", "-u", "main.py"]
+RUN ["pip", "install", "-e", "sysmon"]
+USER ami
+CMD ["sysmon-report"]
+
