@@ -223,4 +223,3 @@ class Task:
         with ThreadPoolExecutor(max_workers=len(self.remotes)) as executor:
             [executor.submit(remote.execute, command, True)
              for remote in self.remotes]
-
